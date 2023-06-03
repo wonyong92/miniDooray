@@ -66,6 +66,7 @@ public class GatewayController {
   public String index(Authentication authentication, HttpSession session) throws JsonProcessingException {
     JsonNode jsonNode = mapper.readTree(mapper.writeValueAsString(session.getAttribute("Attribute")));
     System.out.println(jsonNode.get("private_email"));
+    System.out.println(SecurityContextHolder.getContext().getAuthentication().getName());
     return "index";
   }
 

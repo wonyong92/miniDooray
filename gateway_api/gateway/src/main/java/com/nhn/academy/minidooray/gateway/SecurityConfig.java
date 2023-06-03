@@ -35,6 +35,7 @@ public class SecurityConfig {
   @Bean
   @Profile(value = "test")
   protected SecurityFilterChain configTest(HttpSecurity http) throws Exception {
+    System.out.println("profile TEST");
     http.authorizeHttpRequests().anyRequest().permitAll().and()
         .csrf().disable()
         .oauth2Login()
@@ -48,8 +49,10 @@ public class SecurityConfig {
         .and().and()
         .formLogin()
         .successHandler(successHandler)
+        .and().logout().invalidateHttpSession(true)
+        .deleteCookies("JSESSIONID")
+        .logoutSuccessUrl("/login")
         .and().authenticationProvider(provider)
-
     ;
 
 
@@ -57,8 +60,9 @@ public class SecurityConfig {
   }
 
   @Bean
-  @Profile(value = "dev")
+  @Profile("!test")
   protected SecurityFilterChain config(HttpSecurity http) throws Exception {
+    System.out.println("profile DEV");
     http.authorizeHttpRequests().anyRequest().permitAll().and()
         .csrf().disable()
         .oauth2Login()

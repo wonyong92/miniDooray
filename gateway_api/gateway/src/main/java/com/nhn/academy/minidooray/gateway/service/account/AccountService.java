@@ -44,10 +44,7 @@ public class AccountService {
   }
 
   public String createAccount(AccountDto dto) throws JsonProcessingException {
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Accept", "application/json");
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    String result = RestTemplateUtil.createQuery(template, accountUrl, accountPort, "/accounts", HttpMethod.POST, new HttpEntity<>(mapper.writeValueAsString(dto), headers), String.class).getBody();
+    String result = RestTemplateUtil.createQuery(template, accountUrl, accountPort, "/accounts", HttpMethod.POST, mapper.writeValueAsString(dto), String.class).getBody();
     return result;
   }
 
