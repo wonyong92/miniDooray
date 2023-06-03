@@ -6,6 +6,7 @@ import com.nhn.academy.minidooray.gateway.security.OauthLoginSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -32,6 +33,31 @@ public class SecurityConfig {
   }
   //기본 필터 순서 - csrf - oauth - formlogin
   @Bean
+  @Profile(value = "test")
+  protected SecurityFilterChain configTest(HttpSecurity http) throws Exception {
+    http.authorizeHttpRequests().anyRequest().permitAll().and()
+        .csrf().disable()
+        .oauth2Login()
+        /*oauth 로그인 수행 지점 설정*/
+        .authorizationEndpoint()
+        .baseUri("/login").and()
+        .successHandler(oauthLoginSuccessHandler)
+        //.defaultSuccessUrl("/") //successHandler 를 덮어쓴다
+        .userInfoEndpoint()
+        .userService(oAuth2MemberService)
+        .and().and()
+        .formLogin()
+        .successHandler(successHandler)
+        .and().authenticationProvider(provider)
+
+    ;
+
+
+    return http.build();
+  }
+
+  @Bean
+  @Profile(value = "dev")
   protected SecurityFilterChain config(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests().anyRequest().permitAll().and()
         .csrf().disable()
