@@ -46,27 +46,7 @@ public class OauthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     //    System.out.println(jsonNode.get("private_email"));
     //
 
-    String accessToken = JWT.create().withClaim("id",userDetails.getName()).sign(Algorithm.HMAC512(JwtProperties.SECRET));
-
-
-    Cookie accessJwt = new Cookie("ACCESS_TOKEN", TOKEN_PREFIX+accessToken);
-    accessJwt.setDomain("localhost");
-    accessJwt.setPath("/");
-
-    Cookie refreshJwt = new Cookie("REFRESH_TOKEN","testrefreshtoken");
-    refreshJwt.setDomain("localhost");
-    refreshJwt.setPath("/");
-    refreshJwt.setHttpOnly(true);
-    response.addCookie(accessJwt);
-    response.addCookie(refreshJwt);
     session.setAttribute("Attribute",((DefaultOAuth2User) authentication.getPrincipal()).getAttributes());
-
-    Cookie cookie = new Cookie("SESSION", sessionId);
-    cookie.setMaxAge(259200);     // 3일
-    cookie.setDomain("localhost");
-    cookie.setPath("/");
-    cookie.setHttpOnly(true);
-    response.addCookie(cookie);
 
     super.onAuthenticationSuccess(request, response, authentication);
   }

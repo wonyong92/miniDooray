@@ -53,6 +53,10 @@ public class SecurityConfig {
         .invalidateHttpSession(true)
         .logoutUrl("/logout")
         .deleteCookies("JSESSIONID")
+        .deleteCookies("SESSIONID")
+        .deleteCookies("SESSION")
+        .deleteCookies("ACCESS_TOKEN")
+        .deleteCookies("REFRESH_TOKEN")
         .logoutSuccessUrl("/login")
         .and()
         .oauth2Login()
@@ -71,7 +75,6 @@ public class SecurityConfig {
         .anyRequest().authenticated().and()
         .rememberMe().rememberMeParameter(System.getenv("rememberMe_secret")).alwaysRemember(true).userDetailsService(userDetailsService)
     ;
-   // http.addFilterBefore(jwtAuthorizationFilter, OAuth2AuthorizationRequestRedirectFilter.class);
 
     return http.build();
   }
@@ -81,8 +84,5 @@ public class SecurityConfig {
   public AuthenticationEntryPoint authenticationEntryPoint() {
     return new Http403ForbiddenEntryPoint();
   }
-
-//  @Autowired
-//  JwtAuthorizationFilter jwtAuthorizationFilter;
 
 }
