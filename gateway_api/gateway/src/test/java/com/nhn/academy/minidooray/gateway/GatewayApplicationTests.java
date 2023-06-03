@@ -8,6 +8,7 @@ class GatewayApplicationTests {
 
   @Test
   void contextLoads() {
+    System.out.println(System.getProperty("spring.profiles.active"));
   }
 
 }

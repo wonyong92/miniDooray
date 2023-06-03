@@ -8,24 +8,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @Setter
 public class RedisProperties {
-/*
-
-
-
-  @Value("${spring.redis.host}")
-  private String redisHost;
-
-  @Value("${spring.redis.port}")
-  private int redisPort;
-
-  @Value("${spring.redis.password}")
-  private String redisPwd;
-
-  @Value("${spring.redis.database}")
-  private int redisDb;
-
-*/
-
   String host;
   String port;
   Integer database;

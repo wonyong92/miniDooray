@@ -1,15 +1,23 @@
 package com.nhn.academy.minidooray.gateway;
 
+import static com.nhn.academy.minidooray.gateway.security.filter.JwtProperties.TOKEN_PREFIX;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.nhn.academy.minidooray.gateway.config.account.AccountApiServerProperties;
 import com.nhn.academy.minidooray.gateway.config.gateway.proterties.RedisProperties;
 import com.nhn.academy.minidooray.gateway.domain.gateway.UserDetail;
+import com.nhn.academy.minidooray.gateway.security.filter.JwtAuthorizationFilter;
+import com.nhn.academy.minidooray.gateway.security.filter.JwtProperties;
+import com.nhn.academy.minidooray.gateway.service.account.AccountService;
 import com.nhn.academy.minidooray.gateway.util.RestTemplateUtil;
 import java.io.IOException;
 import java.util.Map;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -38,6 +46,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -87,6 +96,30 @@ public class GatewayApplication {
         log.info("formLogin 완료. id: {}", authentication.getName());
         template.opsForHash().put(session.getId(), "username", authentication.getName());
         template.opsForHash().put(session.getId(), "authority", authentication.getAuthorities());
+
+        String accessToken = JWT.create().withClaim("id",authentication.getName()).sign(Algorithm.HMAC512(JwtProperties.SECRET));
+
+
+        Cookie accessJwt = new Cookie("ACCESS_TOKEN", TOKEN_PREFIX+accessToken);
+        accessJwt.setDomain("localhost");
+        accessJwt.setPath("/");
+
+        Cookie refreshJwt = new Cookie("REFRESH_TOKEN","testrefreshtoken");
+        refreshJwt.setDomain("localhost");
+        refreshJwt.setPath("/");
+        refreshJwt.setHttpOnly(true);
+        refreshJwt.setMaxAge(3600);
+        response.addCookie(accessJwt);
+        response.addCookie(refreshJwt);
+
+        Cookie cookie = new Cookie("SESSION", session.getId());
+        cookie.setMaxAge(3600);
+        cookie.setDomain("localhost");
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
         response.sendRedirect("/");
       }
     };
@@ -159,5 +192,10 @@ public class GatewayApplication {
 
     return redisTemplate;
   }
+
+//  @Bean
+//  JwtAuthorizationFilter jwtAuthorizationFilter(ObjectMapper mapper, AccountService service) {
+//    return new JwtAuthorizationFilter(service, mapper);
+//  }
 
 }

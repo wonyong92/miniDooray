@@ -13,10 +13,14 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -63,10 +67,11 @@ public class GatewayController {
   AccountService accountService;
 
   @GetMapping("/")
-  public String index(Authentication authentication, HttpSession session) throws JsonProcessingException {
+  public String index(Authentication authentication, HttpSession session,@CookieValue(name="ACCESS_TOKEN",required = false) String ACCESSTOKEN) throws JsonProcessingException {
     JsonNode jsonNode = mapper.readTree(mapper.writeValueAsString(session.getAttribute("Attribute")));
-    System.out.println(jsonNode.get("private_email"));
+    System.out.println("private_email : " + jsonNode.get("private_email"));
     System.out.println(SecurityContextHolder.getContext().getAuthentication().getName());
+    System.out.println(ACCESSTOKEN);
     return "index";
   }
 

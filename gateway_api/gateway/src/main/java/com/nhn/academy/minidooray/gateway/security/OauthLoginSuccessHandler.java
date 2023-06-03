@@ -1,8 +1,15 @@
 package com.nhn.academy.minidooray.gateway.security;
 
+import static com.nhn.academy.minidooray.gateway.security.filter.JwtProperties.TOKEN_PREFIX;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.nhn.academy.minidooray.gateway.security.filter.JwtProperties;
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -22,6 +29,7 @@ public class OauthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
       Authentication authentication)
       throws IOException, ServletException {
+    System.out.println("oauth2 login success");
     HttpSession session = request.getSession(false);
     String sessionId = session.getId();
 
@@ -38,6 +46,28 @@ public class OauthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     //    JsonNode jsonNode = mapper.readTree(mapper.writeValueAsString(session.getAttribute("Attribute")));
     //    System.out.println(jsonNode.get("private_email"));
     //
+
+    String accessToken = JWT.create().withClaim("id",userDetails.getName()).sign(Algorithm.HMAC512(JwtProperties.SECRET));
+
+
+    Cookie accessJwt = new Cookie("ACCESS_TOKEN", TOKEN_PREFIX+accessToken);
+    accessJwt.setDomain("localhost");
+    accessJwt.setPath("/");
+
+    Cookie refreshJwt = new Cookie("REFRESH_TOKEN","testrefreshtoken");
+    refreshJwt.setDomain("localhost");
+    refreshJwt.setPath("/");
+    refreshJwt.setHttpOnly(true);
+    response.addCookie(accessJwt);
+    response.addCookie(refreshJwt);
+    session.setAttribute("Attribute",((DefaultOAuth2User) authentication.getPrincipal()).getAttributes());
+
+    Cookie cookie = new Cookie("SESSION", sessionId);
+    cookie.setMaxAge(259200);     // 3일
+    cookie.setDomain("localhost");
+    cookie.setPath("/");
+    cookie.setHttpOnly(true);
+    response.addCookie(cookie);
 
     super.onAuthenticationSuccess(request, response, authentication);
   }
