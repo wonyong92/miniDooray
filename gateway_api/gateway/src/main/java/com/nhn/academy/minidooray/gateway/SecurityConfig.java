@@ -38,7 +38,6 @@ public class SecurityConfig {
   }
   //기본 필터 순서 - csrf - oauth - formlogin
   @Bean
-  @Profile(value = "test")
   protected SecurityFilterChain configTest(HttpSecurity http) throws Exception {
     System.out.println("profile TEST");
     System.out.println("rememberMe_secret : "+ System.getenv("rememberMe_secret"));
@@ -83,31 +82,6 @@ public class SecurityConfig {
     return new Http403ForbiddenEntryPoint();
   }
 
-  @Bean
-  @Profile("!test")
-  protected SecurityFilterChain config(HttpSecurity http) throws Exception {
-    System.out.println("profile DEV");
-    http.authorizeHttpRequests().anyRequest().permitAll().and()
-        .csrf().disable()
-        .oauth2Login()
-        /*oauth 로그인 수행 지점 설정*/
-        .authorizationEndpoint()
-        .baseUri("/login").and()
-        .successHandler(oauthLoginSuccessHandler)
-        //.defaultSuccessUrl("/") //successHandler 를 덮어쓴다
-        .userInfoEndpoint()
-        .userService(oAuth2MemberService)
-        .and().and()
-        .formLogin()
-        .successHandler(successHandler)
-        .and().authenticationProvider(provider)
-
-
-    ;
-    //http.addFilterBefore(jwtAuthorizationFilter, OAuth2AuthorizationRequestRedirectFilter.class);
-
-    return http.build();
-  }
 //  @Autowired
 //  JwtAuthorizationFilter jwtAuthorizationFilter;
 
