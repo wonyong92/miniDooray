@@ -6,7 +6,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.nhn.academy.minidooray.gateway.security.filter.JwtProperties;
 import java.io.IOException;
-import java.net.HttpCookie;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;

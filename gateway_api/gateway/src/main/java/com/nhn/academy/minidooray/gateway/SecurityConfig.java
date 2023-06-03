@@ -1,11 +1,8 @@
 package com.nhn.academy.minidooray.gateway;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhn.academy.minidooray.gateway.security.CustomOAuth2MemberService;
 import com.nhn.academy.minidooray.gateway.security.OauthLoginSuccessHandler;
-import com.nhn.academy.minidooray.gateway.security.filter.JwtAuthorizationFilter;
-import com.nhn.academy.minidooray.gateway.service.account.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,14 +13,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizationCodeGrantFilter;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 @Configuration
 @EnableWebSecurity(debug = true)
 public class SecurityConfig {
@@ -48,6 +41,7 @@ public class SecurityConfig {
   @Profile(value = "test")
   protected SecurityFilterChain configTest(HttpSecurity http) throws Exception {
     System.out.println("profile TEST");
+    System.out.println("rememberMe_secret : "+ System.getenv("rememberMe_secret"));
     http
         .csrf().disable()
         .anonymous().disable()
@@ -76,15 +70,14 @@ public class SecurityConfig {
         .antMatchers("/login/*")
         .permitAll()
         .anyRequest().authenticated().and()
-        .rememberMe().rememberMeParameter("remember").alwaysRemember(true).userDetailsService(userDetailsService)
-
-
-
+        .rememberMe().rememberMeParameter(System.getenv("rememberMe_secret")).alwaysRemember(true).userDetailsService(userDetailsService)
     ;
    // http.addFilterBefore(jwtAuthorizationFilter, OAuth2AuthorizationRequestRedirectFilter.class);
 
     return http.build();
   }
+
+
   @Bean
   public AuthenticationEntryPoint authenticationEntryPoint() {
     return new Http403ForbiddenEntryPoint();

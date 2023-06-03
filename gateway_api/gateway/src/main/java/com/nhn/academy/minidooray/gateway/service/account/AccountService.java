@@ -2,16 +2,12 @@ package com.nhn.academy.minidooray.gateway.service.account;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.nhn.academy.minidooray.gateway.config.account.AccountApiServerProperties;
 import com.nhn.academy.minidooray.gateway.domain.account.AccountDto;
 import com.nhn.academy.minidooray.gateway.util.RestTemplateUtil;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
