@@ -99,6 +99,15 @@
       <version>0.22.0</version>
     </dependency>
 
+<!--    httpclient를 이용하여 connection pool 활용하는 rest template 사용-->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+    </dependency>
+
+
+
+
 
 
   </dependencies>

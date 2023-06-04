@@ -1,4 +1,4 @@
-package com.nhn.academy.minidooray.gateway.config.account;
+package com.nhn.academy.minidooray.gateway.config.properties.account;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,23 +1,28 @@
-package com.nhn.academy.minidooray.gateway;
+package com.nhn.academy.minidooray.gateway.config.webconfig;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nhn.academy.minidooray.gateway.config.account.AccountApiServerProperties;
-import com.nhn.academy.minidooray.gateway.config.gateway.proterties.RedisProperties;
+import com.nhn.academy.minidooray.ProjectBase;
+import com.nhn.academy.minidooray.gateway.config.properties.account.AccountApiServerProperties;
+import com.nhn.academy.minidooray.gateway.config.properties.gateway.proterties.RedisProperties;
 import com.nhn.academy.minidooray.gateway.domain.gateway.UserDetail;
 import com.nhn.academy.minidooray.gateway.util.RestTemplateUtil;
 import java.io.IOException;
+import java.net.http.HttpClient;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
@@ -27,6 +32,7 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -45,8 +51,9 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 @EnableTransactionManagement
 @EnableRedisHttpSession
-@ConfigurationPropertiesScan
 @Slf4j
+@ConfigurationPropertiesScan(basePackageClasses = ProjectBase.class)
+@ComponentScan(basePackageClasses = ProjectBase.class)
 public class GatewayApplication {
 
   public static void main(String[] args) {
@@ -65,58 +72,29 @@ public class GatewayApplication {
     return new BCryptPasswordEncoder();
   }
 
+//  @Bean
+//  RestTemplate restTemplate() {
+//    return new RestTemplate();
+//  }
+
   @Bean
-  RestTemplate restTemplate() {
-    return new RestTemplate();
+  CloseableHttpClient httpClient() {
+    return HttpClientBuilder.create()
+        .setMaxConnTotal(100)    //최대 오픈되는 커넥션 수, 연결을 유지할 최대 숫자
+        .setMaxConnPerRoute(30)   //IP, 포트 1쌍에 대해 수행할 커넥션 수, 특정 경로당 최대 숫자
+        .build();
   }
 
-  @Bean
-  @Primary
-  AuthenticationSuccessHandler successHandler() {
-    return new AuthenticationSuccessHandler() {
-      final RedisTemplate<String, Object> template = redisTemplate(redisConnectionFactory());
-      @Override
-      public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        HttpSession session = request.getSession(true);
-        log.info("formLogin 완료. id: {}", authentication.getName());
-        template.opsForHash().put(session.getId(), "username", authentication.getName());
-        template.opsForHash().put(session.getId(), "authority", authentication.getAuthorities());
-
-        response.sendRedirect("/");
-      }
-    };
-
-  }
 
   @Bean
-  public AuthenticationProvider authenticationProvider() {
-    DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-    authenticationProvider.setUserDetailsService(userDetailsService(restTemplate()));
-    authenticationProvider.setPasswordEncoder(passwordEncoder());
-    return authenticationProvider;
-  }
-
-  @Bean
-  public UserDetailsService userDetailsService(RestTemplate restTemplate) {
-    return new UserDetailsService() {
-      @Override
-      public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        ResponseEntity<String> response = RestTemplateUtil.createQuery(restTemplate, accountApiServerProperties.getUrl(), accountApiServerProperties.getPort(), "/accounts", HttpMethod.GET, String.class, Map.of("id", username));
-
-        String pwd;
-        String id;
-        try {
-          UserDetail userDetail = mapper.readValue(response.getBody(), UserDetail.class);
-          pwd = userDetail.getPwd();
-          id = userDetail.getId();
-
-          return User.builder().username(id).password(pwd).authorities(new SimpleGrantedAuthority("user")).build();
-        } catch (JsonProcessingException e) {
-          e.printStackTrace();
-          return null;//Todo : custom exception 던지기
-        }
-      }
-    };
+  public RestTemplate restTemplate(){
+    //resttemplate 동작 방식의 차이 발생 - connectin pool 이용 vs socket 이용
+    HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+    requestFactory.setConnectTimeout(3000);
+    requestFactory.setConnectionRequestTimeout(3000);
+    requestFactory.setReadTimeout(3000);
+    requestFactory.setHttpClient(httpClient());
+    return new RestTemplate(requestFactory);
   }
 
   @Autowired

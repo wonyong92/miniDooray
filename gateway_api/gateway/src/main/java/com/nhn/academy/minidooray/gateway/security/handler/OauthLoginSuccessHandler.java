@@ -1,4 +1,4 @@
-package com.nhn.academy.minidooray.gateway.security;
+package com.nhn.academy.minidooray.gateway.security.handler;
 
 import static com.nhn.academy.minidooray.gateway.security.filter.JwtProperties.TOKEN_PREFIX;
 
@@ -28,7 +28,9 @@ public class OauthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
       Authentication authentication)
       throws IOException, ServletException {
+
     System.out.println("oauth2 login success");
+
     HttpSession session = request.getSession(false);
     String sessionId = session.getId();
 

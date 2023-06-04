@@ -1,4 +1,4 @@
-package com.nhn.academy.minidooray.gateway.config.task;
+package com.nhn.academy.minidooray.gateway.config.properties.task;
 
 import lombok.Getter;
 import lombok.Setter;

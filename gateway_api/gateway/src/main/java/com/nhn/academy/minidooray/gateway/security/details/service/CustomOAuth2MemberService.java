@@ -1,4 +1,4 @@
-package com.nhn.academy.minidooray.gateway.security;
+package com.nhn.academy.minidooray.gateway.security.details.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
