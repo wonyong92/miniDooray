@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @DataJpaTest
@@ -26,6 +27,6 @@ class MilestoneRepositoryTest {
         for (Milestone milestone : actual) {
             System.out.println(milestone);
         }
-        Assertions.assertThat(actual).hasSize(2);
+        Assertions.assertThat(actual).hasSize(6);
     }
 }

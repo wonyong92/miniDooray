@@ -1,7 +1,6 @@
 package com.example.taskapi.repository;
 
-
-import com.example.taskapi.entity.Member;
+import com.example.taskapi.entity.Task;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,19 +10,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
-class MemberRepositoryTest {
-    @Autowired
-    MemberRepository memberRepository;
+class TaskRepositoryTest {
 
+    @Autowired
+    private TaskRepository taskRepository;
     @Test
     void findAll() {
-        List<Member> actual =
-                memberRepository.findAll();
-        Assertions.assertThat(actual).hasSize(11);
+        List<Task> actual = taskRepository.findAll();
+        for (Task task : actual) {
+            System.out.println(task);
+        }
+        Assertions.assertThat(actual).hasSize(6);
     }
-
-
 }
