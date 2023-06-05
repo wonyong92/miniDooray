@@ -1,5 +1,6 @@
 package com.example.taskapi.repository;
 
+import com.example.taskapi.domain.TaskDto;
 import com.example.taskapi.entity.Task;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,5 +26,14 @@ class TaskRepositoryTest {
             System.out.println(task);
         }
         Assertions.assertThat(actual).hasSize(6);
+    }
+
+    @Test
+    void findAllTaskDtoByProjectId() {
+        List<TaskDto> actual = taskRepository.findAllTaskDtoByProjectId(1);
+        for (TaskDto taskDto : actual) {
+            System.out.println(taskDto);
+        }
+        Assertions.assertThat(actual).isNotEmpty();
     }
 }
