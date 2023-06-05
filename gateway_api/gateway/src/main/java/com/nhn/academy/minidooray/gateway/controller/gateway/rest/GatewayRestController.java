@@ -1,10 +1,10 @@
-package com.nhn.academy.minidooray.gateway.controller.gateway;
+package com.nhn.academy.minidooray.gateway.controller.gateway.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhn.academy.minidooray.gateway.config.properties.account.AccountApiServerProperties;
-import com.nhn.academy.minidooray.gateway.service.account.AccountService;
+import com.nhn.academy.minidooray.gateway.service.account.service.AccountService;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -17,12 +17,12 @@ import org.springframework.web.client.RestTemplate;
 
 @Controller
 
-public class GatewayController {
+public class GatewayRestController {
 
   final RestTemplate template;
   final AccountApiServerProperties accountApiServerProperties;
   @Autowired
-  public GatewayController(RestTemplate template, AccountApiServerProperties accountApiServerProperties) {
+  public GatewayRestController(RestTemplate template, AccountApiServerProperties accountApiServerProperties) {
     this.template = template;
     this.accountApiServerProperties = accountApiServerProperties;
 

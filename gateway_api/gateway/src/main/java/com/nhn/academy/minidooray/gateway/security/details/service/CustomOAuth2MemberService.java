@@ -44,39 +44,47 @@ public class CustomOAuth2MemberService implements OAuth2UserService<OAuth2UserRe
     DefaultOAuth2UserService service = new DefaultOAuth2UserService();
     OAuth2User oAuth2User = service.loadUser(userRequest);
 
+    String provider = userRequest.getClientRegistration().getRegistrationId();
 
-    String accessToken = userRequest.getAccessToken().getTokenValue();
-    session.setAttribute("oAuthToken", accessToken);
+    if (provider.contains("github")) {
+      System.out.println("github 로그인 수행");
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Authorization", "token " + accessToken);
+      String accessToken = userRequest.getAccessToken().getTokenValue();
+      session.setAttribute("oAuthToken", accessToken);
 
-    ResponseEntity<String> response = restTemplate.exchange(
-        "https://api.github.com/user/emails",  // 요청 URL
-        HttpMethod.GET,                     // HTTP 메서드
-        new HttpEntity<>(headers),            // 요청 본문 데이터 + 헤더
-        String.class                        // 응답 데이터 타입
-    );
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("Authorization", "token " + accessToken);
 
-    String privateEmail = "";
-    String publicEmail = "";
-    Map<String,Object> attributes;
-    try {
-      List<Map<String,Object>> result = mapper.readValue(response.getBody(), new TypeReference<>() {});
-      //System.out.println(result);
-      privateEmail = result.get(1).get("email").toString();//private email 읽기
-      publicEmail = result.get(0).get("email").toString();//public email 읽기
+      ResponseEntity<String> response = restTemplate.exchange(
+          "https://api.github.com/user/emails",  // 요청 URL
+          HttpMethod.GET,                     // HTTP 메서드
+          new HttpEntity<>(headers),            // 요청 본문 데이터 + 헤더
+          String.class                        // 응답 데이터 타입
+      );
 
-      attributes = new HashMap<>(oAuth2User.getAttributes());
-      attributes.put("public_email",publicEmail);
-      attributes.put("private_email",privateEmail);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
+      String privateEmail = "";
+      String publicEmail = "";
+      Map<String, Object> attributes;
+      try {
+        List<Map<String, Object>> result = mapper.readValue(response.getBody(), new TypeReference<>() {
+        });
+        //System.out.println(result);
+        privateEmail = result.get(1).get("email").toString();//private email 읽기
+        publicEmail = result.get(0).get("email").toString();//public email 읽기
+
+        attributes = new HashMap<>(oAuth2User.getAttributes());
+        attributes.put("public_email", publicEmail);
+        attributes.put("private_email", privateEmail);
+        System.out.println("oauth 로그인 중~~~~ : " + userRequest.getAdditionalParameters());
+      } catch (JsonProcessingException e) {
+        throw new RuntimeException(e);
+      }
+
+      return new DefaultOAuth2User(
+          Collections.singleton(new SimpleGrantedAuthority("user")),
+          attributes, "private_email");
+      //nameAttributeKey 의 벨류 = Principal name 에 저장
     }
-
-    return new DefaultOAuth2User(
-        Collections.singleton(new SimpleGrantedAuthority("user")),
-        attributes, "private_email");
-        //nameAttributeKey 의 벨류 = Principal name 에 저장
+    return null;
   }
 }

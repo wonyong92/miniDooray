@@ -10,4 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class AccountApiServerProperties {
     String url;
     String port;
+    public String getFullUrl(){
+        return getUrl()+":"+getPort();
+    }
 }

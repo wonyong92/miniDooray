@@ -1,52 +1,37 @@
 package com.nhn.academy.minidooray.gateway.config.webconfig;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhn.academy.minidooray.ProjectBase;
 import com.nhn.academy.minidooray.gateway.config.properties.account.AccountApiServerProperties;
 import com.nhn.academy.minidooray.gateway.config.properties.gateway.proterties.RedisProperties;
-import com.nhn.academy.minidooray.gateway.domain.gateway.UserDetail;
-import com.nhn.academy.minidooray.gateway.util.RestTemplateUtil;
-import java.io.IOException;
-import java.net.http.HttpClient;
-import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import com.nhn.academy.minidooray.gateway.config.properties.task.TaskApiServerProperties;
+import com.nhn.academy.minidooray.gateway.interceptor.AuthorityCheckerInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 @EnableTransactionManagement
@@ -54,7 +39,7 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 @ConfigurationPropertiesScan(basePackageClasses = ProjectBase.class)
 @ComponentScan(basePackageClasses = ProjectBase.class)
-public class GatewayApplication {
+public class GatewayApplication  implements WebMvcConfigurer, ApplicationContextAware {
 
   public static void main(String[] args) {
 
@@ -72,10 +57,6 @@ public class GatewayApplication {
     return new BCryptPasswordEncoder();
   }
 
-//  @Bean
-//  RestTemplate restTemplate() {
-//    return new RestTemplate();
-//  }
 
   @Bean
   CloseableHttpClient httpClient() {
@@ -121,4 +102,23 @@ public class GatewayApplication {
     return redisTemplate;
   }
 
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(authorityChecker());
+  }
+  @Autowired
+  TaskApiServerProperties taskApiServerProperties;
+
+  ApplicationContext context;
+
+  @Bean
+  public AuthorityCheckerInterceptor authorityChecker(){
+    return new AuthorityCheckerInterceptor(restTemplate(),accountApiServerProperties,taskApiServerProperties,context.getBean(ObjectMapper.class));
+  }
+
+
+  @Override
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    this.context = applicationContext;
+  }
 }

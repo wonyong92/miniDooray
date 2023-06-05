@@ -4,10 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "api")
+@ConfigurationProperties(prefix = "api.task")
 @Getter
 @Setter
 public class TaskApiServerProperties {
   String url;
   String port;
+  public String getFullUrl(){
+    return getUrl()+":"+getPort();
+  }
 }

@@ -1,4 +1,4 @@
-package com.nhn.academy.minidooray.gateway;
+package com.nhn.academy.minidooray.gateway.core;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

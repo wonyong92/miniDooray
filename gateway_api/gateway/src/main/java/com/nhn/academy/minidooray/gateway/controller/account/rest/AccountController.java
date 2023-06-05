@@ -1,15 +1,19 @@
-package com.nhn.academy.minidooray.gateway.controller.account;
+package com.nhn.academy.minidooray.gateway.controller.account.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhn.academy.minidooray.gateway.config.properties.account.AccountApiServerProperties;
 import com.nhn.academy.minidooray.gateway.domain.account.AccountDto;
 import com.nhn.academy.minidooray.gateway.domain.account.AccountUpdateDto;
-import com.nhn.academy.minidooray.gateway.service.account.AccountService;
+import com.nhn.academy.minidooray.gateway.service.account.service.AccountService;
 import java.net.URI;
+import javax.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -18,9 +22,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
-
+@Slf4j
 @Controller
-
 public class AccountController {
 
   final RestTemplate template;
@@ -58,11 +61,20 @@ public class AccountController {
   @Autowired
   AccountService accountService;
 
+  @Autowired
+  HttpSession session;
+
+  @Autowired
+  RedisTemplate<String,Object> redisTemplate;
+
 
   @GetMapping("/account")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
   public ResponseEntity<String> getMemberData(@RequestParam(name = "id") String id) throws JsonProcessingException {
     String result = accountService.getAccount(id);
-
+    log.info("session 상태 : "+session.getId() );
+    redisTemplate.opsForHash().put(session.getId(),"testValue","test" );
+    log.info("redis session : "+redisTemplate.opsForHash().get(session.getId(),"testValue"));
     return ResponseEntity.ok()
         .header("Custom-Header", "Value")
         .body(result);

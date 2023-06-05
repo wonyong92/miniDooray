@@ -41,7 +41,7 @@ import org.springframework.security.web.authentication.Http403ForbiddenEntryPoin
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity(debug = false)
 @Slf4j
 public class SecurityConfig {
 
@@ -73,40 +73,7 @@ public class SecurityConfig {
   //기본 필터 순서 - csrf - oauth - formlogin
   @Bean
   protected SecurityFilterChain configTest(HttpSecurity http) throws Exception {
-//    http
-//        .csrf().disable()
-//        .anonymous().disable()
-//        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER).and()
-//        .formLogin()
-//        .loginProcessingUrl("/login")
-//        .successHandler(successHandler)
-//        .and()
-//        .logout()
-//        .invalidateHttpSession(true)
-//        .logoutUrl("/logout")
-//        .deleteCookies("JSESSIONID")
-//        .deleteCookies("SESSIONID")
-//        .deleteCookies("SESSION")
-//        .deleteCookies("ACCESS_TOKEN")
-//        .deleteCookies("REFRESH_TOKEN")
-//        .logoutSuccessUrl("/login")
-//        .and()
-//        .oauth2Login()
-//        /*oauth 로그인 수행 지점 설정*/
-//        .authorizationEndpoint()
-//        .baseUri("/login")
-//        .and()
-//        .successHandler(oauthLoginSuccessHandler)
-//        //.defaultSuccessUrl("/") //successHandler 를 덮어쓴다
-//        .userInfoEndpoint()
-//        .userService(oAuth2MemberService)
-//        .and().and().authenticationProvider(provider)
-//        .authorizeRequests()
-//        .antMatchers("/login/*")
-//        .permitAll()
-//        .anyRequest().authenticated().and()
-//        .rememberMe().rememberMeParameter(System.getenv("rememberMe_secret")).userDetailsService(userDetailsService)
-//    ;
+
 
     http.csrf().disable();
     http.anonymous().disable();
@@ -151,9 +118,21 @@ public class SecurityConfig {
         .authorizeRequests()
         .antMatchers("/login/*")
         .permitAll()
-        .anyRequest().authenticated();
+        .anyRequest().permitAll();
 
-    //remember me 사용시 로그인 성공 후 바로 리다이렉트가 아닌 토큰 로그인을 다시 수행하여 최종적으로 인증을 마친다
+    http.headers()
+        .defaultsDisabled()
+        .contentTypeOptions()
+        .and()
+        .cacheControl()
+        .and()
+        .xssProtection().block(true)
+        .and()
+        .frameOptions().sameOrigin()
+        .and()
+        .exceptionHandling()
+        .accessDeniedPage("/error/403");
+    //보안 헤더 설정
 
     return http.build();
   }

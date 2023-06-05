@@ -3,6 +3,7 @@ package com.nhnacademy.minidooray.account.controller;
 
 import com.nhnacademy.minidooray.account.domain.Member;
 import com.nhnacademy.minidooray.account.repository.MemberRepository;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,13 @@ public class AccountController {
 
     System.out.println(member);
     return ResponseEntity.ok(memberRepository.save(member));
+  }
+
+  @GetMapping("/accounts/all")
+  public ResponseEntity<List<Member>> getMembers(HttpServletRequest request, @RequestHeader(name="clientId",required = false) String clientId){
+
+      return ResponseEntity.ok(memberRepository.findAll());
+
   }
 
 }

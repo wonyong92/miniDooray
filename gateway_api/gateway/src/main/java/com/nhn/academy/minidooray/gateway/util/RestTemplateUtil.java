@@ -15,10 +15,12 @@ public class RestTemplateUtil {
 
   public static <T> ResponseEntity<T> createQuery(RestTemplate restTemplate, String url, String port, String path, HttpMethod method, String body, Class<T> clazz) {
     String clientId = System.getenv("client_secret");
+
     HttpHeaders headers = new HttpHeaders();
     headers.set("clientId", clientId);
     headers.setContentType(MediaType.APPLICATION_JSON);
     HttpEntity<String> body2 = new HttpEntity<>(body,headers);
+
     //body.getHeaders().add("clientId", clientId.toString());//clientid로 입력된다 - http haeder 는 대소문자를 구별하지 않으므로 자동으로 소문자로 맵핑한다
 //RestTemplate 의 헤더는 소문자로 작성하는 것이 관례이다
     return restTemplate.exchange(
@@ -38,7 +40,9 @@ public class RestTemplateUtil {
       builder.queryParam(key, params.get(key));
     }
     HttpHeaders headers = new HttpHeaders();
+
     headers.set("clientId", clientId);
+
     HttpEntity<Void> body = new HttpEntity<>(headers);
 
     return restTemplate.exchange(

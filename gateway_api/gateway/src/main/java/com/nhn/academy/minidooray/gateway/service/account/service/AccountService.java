@@ -1,4 +1,4 @@
-package com.nhn.academy.minidooray.gateway.service.account;
+package com.nhn.academy.minidooray.gateway.service.account.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

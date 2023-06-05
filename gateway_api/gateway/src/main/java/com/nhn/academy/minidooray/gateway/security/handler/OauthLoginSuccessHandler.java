@@ -1,20 +1,20 @@
 package com.nhn.academy.minidooray.gateway.security.handler;
 
-import static com.nhn.academy.minidooray.gateway.security.filter.JwtProperties.TOKEN_PREFIX;
-
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.nhn.academy.minidooray.gateway.security.filter.JwtProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nhn.academy.minidooray.gateway.domain.account.AccountDto;
+import com.nhn.academy.minidooray.gateway.service.account.service.AccountService;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -23,6 +23,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OauthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
   private final RedisTemplate<String, Object> redisTemplate;
+  private final AccountService accountService;
+  private final ObjectMapper objectMapper;
+  private final PasswordEncoder encoder;
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -48,7 +51,28 @@ public class OauthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     //    System.out.println(jsonNode.get("private_email"));
     //
 
-    session.setAttribute("Attribute",((DefaultOAuth2User) authentication.getPrincipal()).getAttributes());
+
+    Map<String, Object> attribute = ((DefaultOAuth2User) authentication.getPrincipal()).getAttributes();
+    String findResult = accountService.getAccount(attribute.get("id").toString());
+    System.out.println("principal : "+ SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    if(findResult.equals("no_data"))
+    {
+      System.out.println("oauth 인증 결과 데이터로 회원 정보 조회 실패 - 회원 가입 진행");
+      //설마 서로 다른 서비스에서 id 값이 겹치는 일이 있을까?
+      AccountDto dto = new AccountDto();
+      dto.setEmail(attribute.get("private_email").toString());
+      dto.setId(attribute.get("id").toString());
+      dto.setPwd(encoder.encode("teststetetset"));
+      accountService.createAccount(dto);
+
+      //private 이메일이 변경되었음을 감지하면 변경 요청까지 보내야 할까?
+    }
+    else{
+      System.out.println("존재하는 회원");
+    }
+    System.out.println("Attribute : "+attribute);
+    session.setAttribute("id",attribute.get("id"));
+    session.setAttribute("Attribute",attribute);
 
     super.onAuthenticationSuccess(request, response, authentication);
   }
