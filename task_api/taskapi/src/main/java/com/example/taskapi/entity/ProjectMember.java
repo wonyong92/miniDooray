@@ -1,7 +1,6 @@
 package com.example.taskapi.entity;
 
 import com.example.taskapi.converter.RoleConverter;
-import com.example.taskapi.converter.StatusConverter;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,6 +11,7 @@ import java.io.Serializable;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class ProjectMember {
 
     @EmbeddedId

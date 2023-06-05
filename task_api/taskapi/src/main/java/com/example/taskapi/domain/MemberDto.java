@@ -1,5 +1,7 @@
 package com.example.taskapi.domain;
 
+
+import com.example.taskapi.entity.ProjectMember;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -8,9 +10,7 @@ import lombok.ToString;
 @Getter
 @ToString
 public class MemberDto {
-
     private String memberId;
-    private String nickname;
-    private String email;
+    private ProjectMember.Role role;
 
 }
