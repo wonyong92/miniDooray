@@ -1,5 +1,7 @@
 package com.example.taskapi.entity;
 
+import com.example.taskapi.converter.RoleConverter;
+import com.example.taskapi.converter.StatusConverter;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,7 +26,18 @@ public class ProjectMember {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
+    @Column(name = "role")
+    @Convert(converter = RoleConverter.class)
+    private Role role;
 
+    public enum Role {
+        ADMIN("관리자"), MEMBER("사용자");
+        Role(String value) {
+            this.value = value;
+        }
+
+        private String value;
+    }
 
     @Embeddable
     @EqualsAndHashCode

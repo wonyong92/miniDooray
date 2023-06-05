@@ -28,10 +28,6 @@ public class Project {
     @Column(name = "status")
     private Status status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id")
-    private Member member;
-
     @Getter
     public enum Status{
         ACTIVATE("A","활성"),
