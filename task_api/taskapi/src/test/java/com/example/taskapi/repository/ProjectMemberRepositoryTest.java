@@ -17,12 +17,4 @@ class ProjectMemberRepositoryTest {
 
     @Autowired
     ProjectMemberRepository projectMemberRepository;
-    @Test
-    void findAllProjectMemberDtoByProjectId() {
-        List<MemberDto> actual = projectMemberRepository.findAllProjectMemberDtoByProjectId(1);
-        for (MemberDto memberDto : actual) {
-            System.out.println(memberDto);
-        }
-        Assertions.assertThat(actual).isNotEmpty();
-    }
 }

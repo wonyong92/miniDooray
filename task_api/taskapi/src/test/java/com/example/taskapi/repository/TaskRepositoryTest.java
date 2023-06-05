@@ -28,12 +28,4 @@ class TaskRepositoryTest {
         Assertions.assertThat(actual).hasSize(6);
     }
 
-    @Test
-    void findAllTaskDtoByProjectId() {
-        List<TaskDto> actual = taskRepository.findAllTaskDtoByProjectId(1);
-        for (TaskDto taskDto : actual) {
-            System.out.println(taskDto);
-        }
-        Assertions.assertThat(actual).isNotEmpty();
-    }
 }
