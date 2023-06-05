@@ -4,14 +4,18 @@ import com.nhnacademy.minidooray.account.domain.AccountStatusEnum;
 import com.nhnacademy.minidooray.account.domain.GatewayAuthEnum;
 import com.nhnacademy.minidooray.account.domain.IsRegisteredEnum;
 import com.nhnacademy.minidooray.account.domain.Member;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 @Getter
 @Setter
 @EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
 @ToString
 public class AccountDto {
 
