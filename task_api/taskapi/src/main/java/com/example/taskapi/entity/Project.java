@@ -32,10 +32,6 @@ public class Project {
     @JoinColumn(name = "admin_id")
     private Member member;
 
-
-
-
-
     @Getter
     public enum Status{
         ACTIVATE("A","활성"),

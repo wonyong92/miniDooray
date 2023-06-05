@@ -7,8 +7,6 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "Milestones")
@@ -21,15 +19,12 @@ public class Milestone {
     @Id
     @Column(name = "milestone_id")
     private Integer milestoneId;
-
     @Column(name = "name", nullable = false)
     private String name;
-
     @Column(name = "start_at", nullable = false)
     private LocalDate startAt;
     @Column(name = "end_at", nullable = false)
     private LocalDate endAt;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
