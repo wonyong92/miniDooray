@@ -2,7 +2,7 @@ package com.example.taskapi.controller;
 
 import com.example.taskapi.domain.MemberDto;
 import com.example.taskapi.domain.ProjNameForMemDto;
-import com.example.taskapi.domain.ProjectDto;
+import com.example.taskapi.domain.ProjectDetailDto;
 import com.example.taskapi.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,12 +20,12 @@ public class ProjectRestController {
     private final ProjectService projectService;
 
     @GetMapping
-    public List<ProjectDto> getAllProjects() {
+    public List<ProjectDetailDto> getAllProjects() {
         return projectService.findAllProjectDto();
     }
 
     @GetMapping("/{projectId}")
-    public ProjectDto getProject(@PathVariable(name = "projectId") Integer projectId) {
+    public ProjectDetailDto getProject(@PathVariable(name = "projectId") Integer projectId) {
         return projectService.findProjectDtoById(projectId);
     }
 
