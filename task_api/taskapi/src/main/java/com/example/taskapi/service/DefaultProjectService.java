@@ -1,8 +1,6 @@
 package com.example.taskapi.service;
 
 import com.example.taskapi.domain.*;
-import com.example.taskapi.entity.Project;
-import com.example.taskapi.exception.NotFoundException;
 import com.example.taskapi.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,5 +27,10 @@ public class DefaultProjectService implements ProjectService {
     @Override
     public ProjectDto findProjectDtoById(Integer projectId) {
         return null;
+    }
+
+    @Override
+    public List<MemberDto> findAllMembersById(Integer projectId) {
+        return projectMemberRepository.findMembersByProjectId(projectId);
     }
 }
