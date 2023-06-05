@@ -1,6 +1,6 @@
 package com.nhnacademy.minidooray.account.domain;
 
-public enum GatewayAuthEnum {
+public enum SystemAuth {
     USER,
     ADMIN,
 }

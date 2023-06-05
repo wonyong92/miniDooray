@@ -1,10 +1,12 @@
 package com.nhnacademy.minidooray.account.service;
 
 import com.nhnacademy.minidooray.account.command.AccountDto;
+import com.nhnacademy.minidooray.account.domain.AccountStatus;
 import com.nhnacademy.minidooray.account.domain.Member;
+import com.nhnacademy.minidooray.account.ex.MemberDuplicatedException;
+import com.nhnacademy.minidooray.account.ex.MemberNotFoundException;
 import com.nhnacademy.minidooray.account.repository.MemberRepository;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,16 +18,32 @@ public class  DefaultMemberService implements MemberService {
 
     @Override
     public String createMember(AccountDto accountDto) {
-        Member member = Member.builder().id(accountDto.getId())
+        String memberId = accountDto.getId();
+
+        if (memberRepository.existsById(memberId)) {
+            throw new MemberDuplicatedException("Member already exists!");
+        }
+
+        Member member = Member.builder()
+            .id(memberId)
             .pwd(accountDto.getPwd())
             .email(accountDto.getEmail())
-            .username(accountDto.getUsername())
-            .accountStatusEnum(accountDto.getAccountStatusEnum())
-            .gatewayAuthEnum(accountDto.getGatewayAuthEnum())
-            .isRegisteredEnum(accountDto.getIsRegisteredEnum())
+            .nickname(accountDto.getNickname())
+            .accountStatus(accountDto.getAccountStatus())
+            .systemAuth(accountDto.getSystemAuth())
             .build();
 
         return memberRepository.save(member).getId();
+    }
+
+    @Override
+    public Member getMember(String memberId) {
+        Optional<Member> findMember = memberRepository.findById(memberId);
+
+        if (findMember.isPresent()) {
+            return findMember.get();
+        }
+        throw new MemberNotFoundException("Member Not Found!");
     }
 
     @Override
@@ -35,26 +53,15 @@ public class  DefaultMemberService implements MemberService {
         member.setId(updateParam.getId());
         member.setPwd(updateParam.getPwd());
         member.setEmail(updateParam.getEmail());
-        member.setUsername(updateParam.getUsername());
-        member.setAccountStatusEnum(updateParam.getAccountStatusEnum());
-        member.setGatewayAuthEnum(updateParam.getGatewayAuthEnum());
-        member.setIsRegisteredEnum(updateParam.getIsRegisteredEnum());
+        member.setNickname(updateParam.getNickname());
+        member.setAccountStatus(updateParam.getAccountStatus());
+        member.setSystemAuth(updateParam.getSystemAuth());
     }
 
     @Override
     public void deleteMember(String memberId) {
-        Member member = memberRepository.findById(memberId).
-            orElseThrow(NoSuchElementException::new);
-        memberRepository.delete(member);
+        Member member = this.getMember(memberId);
+        member.setAccountStatus(AccountStatus.WITHDRAWN);
     }
 
-    @Override
-    public List<Member> getMembers() {
-        return memberRepository.findAll();
-    }
-
-    @Override
-    public Member getMember(String memberId) {
-        return memberRepository.findById(memberId).orElseThrow();
-    }
 }

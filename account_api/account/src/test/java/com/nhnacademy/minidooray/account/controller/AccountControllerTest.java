@@ -7,9 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.nhnacademy.minidooray.account.domain.AccountStatusEnum;
-import com.nhnacademy.minidooray.account.domain.GatewayAuthEnum;
-import com.nhnacademy.minidooray.account.domain.IsRegisteredEnum;
+import com.nhnacademy.minidooray.account.domain.AccountStatus;
+import com.nhnacademy.minidooray.account.domain.SystemAuth;
 import com.nhnacademy.minidooray.account.domain.Member;
 import com.nhnacademy.minidooray.account.service.MemberService;
 import java.util.List;
@@ -42,9 +41,9 @@ class AccountControllerTest {
         given(memberService.getMembers())
             .willReturn(
                 List.of(new Member("nhnacademy", "nhnacademy@gmail.com", "1234", "nhn",
-                        AccountStatusEnum.REGISTERED, GatewayAuthEnum.ADMIN, IsRegisteredEnum.HAS_PERMISSION),
+                        AccountStatus.REGISTERED, SystemAuth.ADMIN, IsRegisteredEnum.HAS_PERMISSION),
                     new Member("kusun1020", "kusun1020@gmail.com", "0000", "ngs",
-                        AccountStatusEnum.DORMANT, GatewayAuthEnum.USER, IsRegisteredEnum.NO_PERMISSION))
+                        AccountStatus.DORMANT, SystemAuth.USER, IsRegisteredEnum.NO_PERMISSION))
             );
 
         mockMvc.perform(get("/api"))

@@ -1,6 +1,6 @@
 package com.nhnacademy.minidooray.account.domain;
 
-public enum AccountStatusEnum {
+public enum AccountStatus {
     REGISTERED,
     WITHDRAWN,
     DORMANT
