@@ -19,6 +19,9 @@ public class Member {
     @Column(name = "member_id")
     private String memberId;
 
+    @Column(name = "nickname")
+    private String nickname;
+
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
