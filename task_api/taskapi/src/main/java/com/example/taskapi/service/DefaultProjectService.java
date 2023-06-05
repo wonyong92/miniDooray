@@ -1,6 +1,7 @@
 package com.example.taskapi.service;
 
 import com.example.taskapi.domain.*;
+import com.example.taskapi.exception.NotFoundException;
 import com.example.taskapi.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class DefaultProjectService implements ProjectService {
     private final TaskRepository taskRepository;
 
     private final CommentRepository commentRepository;
+    private final MemberRepository memberRepository;
     @Override
     public List<ProjectDto> findAllProjectDto() {
         return null;
@@ -32,5 +34,16 @@ public class DefaultProjectService implements ProjectService {
     @Override
     public List<MemberDto> findAllMembersById(Integer projectId) {
         return projectMemberRepository.findMembersByProjectId(projectId);
+    }
+
+    @Override
+    public ProjNameForMemDto findProjNamesByMemberId(String memberId) {
+        boolean isExistedMember = memberRepository.existsById(memberId);
+        if (!isExistedMember) {
+            throw new NotFoundException("member not found, memberId = " + memberId);
+        }
+
+        List<ProjectNameDto> projectNamesByMemberId = projectMemberRepository.findProjectNamesByMemberId(memberId);
+        return new ProjNameForMemDto(memberId, projectNamesByMemberId);
     }
 }

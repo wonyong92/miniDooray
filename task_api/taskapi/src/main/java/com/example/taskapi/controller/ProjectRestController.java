@@ -1,6 +1,7 @@
 package com.example.taskapi.controller;
 
 import com.example.taskapi.domain.MemberDto;
+import com.example.taskapi.domain.ProjNameForMemDto;
 import com.example.taskapi.domain.ProjectDto;
 import com.example.taskapi.service.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,11 @@ public class ProjectRestController {
     @GetMapping("/{projectId}/members")
     public List<MemberDto> getProjectMembers(@PathVariable(name = "projectId") Integer projectId) {
         return projectService.findAllMembersById(projectId);
+    }
+
+    @GetMapping("/members/{memberId}")
+    public ProjNameForMemDto getMemberInvolvedProjectNames(@PathVariable(name = "memberId") String memberId) {
+        return projectService.findProjNamesByMemberId(memberId);
     }
 
 }
