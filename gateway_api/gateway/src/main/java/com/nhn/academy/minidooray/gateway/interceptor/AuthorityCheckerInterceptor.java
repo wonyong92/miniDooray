@@ -17,9 +17,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+
 @Slf4j
 @RequiredArgsConstructor
 public class AuthorityCheckerInterceptor implements HandlerInterceptor {
+
   final RestTemplate restTemplate;
   final AccountApiServerProperties accountApiServerProperties;
   final TaskApiServerProperties taskApiServerProperties;
@@ -28,13 +30,12 @@ public class AuthorityCheckerInterceptor implements HandlerInterceptor {
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-    String requestUri = request.getRequestURI()+request.getServletPath();
-    log.info("요청 URI : {}",requestUri);
-    log.info("account full : "+accountApiServerProperties.getFullUrl());
-    if(requestUri.matches("^.*(project|projects).*$"))
-    {
+    String requestUri = request.getRequestURI() + request.getServletPath();
+    log.info("요청 URI : {}", requestUri);
+    log.info("account full : " + accountApiServerProperties.getFullUrl());
+    if (requestUri.matches("^.*(project|projects).*$")) {
       System.out.println("프로젝트 권한 확인");
-      switch(request.getMethod()){
+      switch (request.getMethod()) {
         case "GET":
           break;
         case "POST":
@@ -43,29 +44,31 @@ public class AuthorityCheckerInterceptor implements HandlerInterceptor {
         case "DELELTE":
           System.out.println("작성자인지 확인");
           break;
-        default :
+        default:
           System.out.println("no method");
       }
 
-    }else if(requestUri.matches("^.*(task|tasks).*$" )){
+    } else if (requestUri.matches("^.*(task|tasks).*$")) {
       System.out.println("태스크 권한 확인");
-    }else if(requestUri.matches("^.*(account|accounts).*$" )){
+    } else if (requestUri.matches("^.*(account|accounts).*$")) {
       log.info("어카운트 권한 확인 ");
-      switch(request.getMethod()){
+      switch (request.getMethod()) {
         case "GET":
-          System.out.println(SecurityContextHolder.getContext().getAuthentication().getName()+" 본인 인지 확인 필요");
-          break;
+          log.info("프로젝트 멤버 확인 : {}", SecurityContextHolder.getContext().getAuthentication().getName());
+          boolean result = checkMemberOfProject(SecurityContextHolder.getContext().getAuthentication().getName(), "1");
+          log.info("인증 확인 : {}", result);
+          return result;
+
         case "POST":
         case "PUT":
         case "UPDATE":
         case "DELELTE":
           System.out.println("작성자인지 확인");
           break;
-        default :
+        default:
           System.out.println("no method");
       }
     }
-    System.out.println(checkMemberOfProject(SecurityContextHolder.getContext().getAuthentication().getName()));
 
     if (handler instanceof HandlerMethod) {
       HandlerMethod handlerMethod = (HandlerMethod) handler;
@@ -73,21 +76,29 @@ public class AuthorityCheckerInterceptor implements HandlerInterceptor {
       if (handlerMethod.hasMethodAnnotation(PreAuthorize.class)) {
         // 접근 권한 체크 로직 수행
         // 필요한 경우 접근 거부 응답 처리 등을 수행할 수 있음
-
         System.out.println(handlerMethod.getMethodAnnotation(PreAuthorize.class).value());
       }
     }
 
-    
     return true;
   }
 
-  public boolean checkMemberOfProject(String clientId) throws JsonProcessingException {
-    System.out.println("full url : "+accountApiServerProperties.getFullUrl());
-    return Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(accountApiServerProperties.getFullUrl() + "/accounts/all", JsonNode[].class)))
+  public boolean checkMemberOfProject(String clientId, String projectId) throws JsonProcessingException {
+    String requestUrl = taskApiServerProperties.getFullUrl() + "/projects/members?proejctId=" + projectId;
+    log.debug("check task api - get pr members full url : " + requestUrl);
+    return Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(requestUrl, JsonNode[].class, projectId)))
         .anyMatch(node ->
-      node.get("id").toString().equals("\""+clientId+"\"")
-    );
+            node.get("id").toString().equals("\"" + clientId + "\"")
+        );
+  }
+
+  public boolean checkAmIMemberOfProject(String projectId) throws JsonProcessingException {
+    String requestUrl = taskApiServerProperties.getFullUrl() + "/projects/members?proejctId=" + projectId;
+    log.debug("check task api - get pr members full url : " + requestUrl);
+    return Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(requestUrl, JsonNode[].class, projectId)))
+        .anyMatch(node ->
+            node.get("id").toString().equals("\"" + SecurityContextHolder.getContext().getAuthentication().getName() + "\"")
+        );
   }
 
   @Override

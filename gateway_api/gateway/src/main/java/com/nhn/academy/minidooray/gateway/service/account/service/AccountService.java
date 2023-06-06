@@ -6,21 +6,28 @@ import com.nhn.academy.minidooray.gateway.config.properties.account.AccountApiSe
 import com.nhn.academy.minidooray.gateway.domain.account.AccountDto;
 import com.nhn.academy.minidooray.gateway.util.RestTemplateUtil;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@Slf4j
 public class AccountService {
 
   final RestTemplate template;
   final AccountApiServerProperties accountApiServerProperties;
   String accountUrl;
-  String taskUrl;
+
   String accountPort;
-  String taskPort;
+
+
+  String accountApiFullUrl;
+  String taskApiFullUrl;
   @Autowired
   ObjectMapper mapper;
   @Autowired
@@ -34,9 +41,10 @@ public class AccountService {
     this.accountApiServerProperties = accountApiServerProperties;
 
     accountUrl = accountApiServerProperties.getUrl();
-    taskUrl = accountApiServerProperties.getUrl();
+
     accountPort = accountApiServerProperties.getPort();
-    taskPort = accountApiServerProperties.getPort();
+
+    accountApiFullUrl = accountApiServerProperties.getFullUrl();
   }
 
   public String createAccount(AccountDto dto) throws JsonProcessingException {
@@ -50,5 +58,23 @@ public class AccountService {
       return "no_data";
     }
     return result;
+  }
+
+  public ResponseEntity<Boolean> checkExistId(String id) {
+    ResponseEntity<Boolean> result = template.postForEntity(accountApiFullUrl + "/accounts/exist/id", new HttpEntity<Map<String,String>>(Map.of("clientId", id), null), Boolean.class);
+    if (result.getStatusCodeValue() != 200) {
+      log.info("status code check {}", result.getStatusCodeValue());
+      return ResponseEntity.ok(false);
+    }
+    return ResponseEntity.ok(result.getBody());
+  }
+
+  public ResponseEntity<Boolean> checkExistEmail(String email) {
+    ResponseEntity<Boolean> result = template.postForEntity(accountApiFullUrl + "/accounts/exist/email", new HttpEntity<Map<String,String>>(Map.of("clientEmail", email), null), Boolean.class);
+    if (result.getStatusCodeValue() != 200) {
+      log.info("status code check {}", result.getStatusCodeValue());
+      return ResponseEntity.ok(false);
+    }
+    return ResponseEntity.ok(result.getBody());
   }
 }

@@ -39,24 +39,27 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Slf4j
 @ConfigurationPropertiesScan(basePackageClasses = ProjectBase.class)
 @ComponentScan(basePackageClasses = ProjectBase.class)
-public class GatewayApplication  implements WebMvcConfigurer, ApplicationContextAware {
+public class GatewayApplication implements WebMvcConfigurer, ApplicationContextAware {
+
+  @Autowired
+  ObjectMapper mapper;
+  @Autowired
+  AccountApiServerProperties accountApiServerProperties;
+  @Autowired
+  RedisProperties serverProperties;
+  @Autowired
+  TaskApiServerProperties taskApiServerProperties;
+  ApplicationContext context;
 
   public static void main(String[] args) {
 
     SpringApplication.run(GatewayApplication.class, args);
   }
 
-  @Autowired
-  ObjectMapper mapper;
-
-  @Autowired
-  AccountApiServerProperties accountApiServerProperties;
-
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
-
 
   @Bean
   CloseableHttpClient httpClient() {
@@ -66,9 +69,8 @@ public class GatewayApplication  implements WebMvcConfigurer, ApplicationContext
         .build();
   }
 
-
   @Bean
-  public RestTemplate restTemplate(){
+  public RestTemplate restTemplate() {
     //resttemplate 동작 방식의 차이 발생 - connectin pool 이용 vs socket 이용
     HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
     requestFactory.setConnectTimeout(3000);
@@ -77,9 +79,6 @@ public class GatewayApplication  implements WebMvcConfigurer, ApplicationContext
     requestFactory.setHttpClient(httpClient());
     return new RestTemplate(requestFactory);
   }
-
-  @Autowired
-  RedisProperties serverProperties;
 
   @Bean
   public RedisConnectionFactory redisConnectionFactory() {
@@ -106,14 +105,10 @@ public class GatewayApplication  implements WebMvcConfigurer, ApplicationContext
   public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(authorityChecker());
   }
-  @Autowired
-  TaskApiServerProperties taskApiServerProperties;
-
-  ApplicationContext context;
 
   @Bean
-  public AuthorityCheckerInterceptor authorityChecker(){
-    return new AuthorityCheckerInterceptor(restTemplate(),accountApiServerProperties,taskApiServerProperties,context.getBean(ObjectMapper.class));
+  public AuthorityCheckerInterceptor authorityChecker() {
+    return new AuthorityCheckerInterceptor(restTemplate(), accountApiServerProperties, taskApiServerProperties, context.getBean(ObjectMapper.class));
   }
 
 

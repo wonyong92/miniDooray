@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class ProjectStatusChange {
+
   Long projectId;
   ProjectStatus status;
 

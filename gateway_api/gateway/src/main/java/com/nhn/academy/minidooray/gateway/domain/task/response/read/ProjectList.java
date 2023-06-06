@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class ProjectList {
+
   List<Project> projects;
 
   boolean hasNext;

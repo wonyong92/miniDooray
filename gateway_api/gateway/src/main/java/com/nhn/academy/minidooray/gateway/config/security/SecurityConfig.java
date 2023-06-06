@@ -2,6 +2,7 @@ package com.nhn.academy.minidooray.gateway.config.security;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhn.academy.minidooray.gateway.config.properties.account.AccountApiServerProperties;
 import com.nhn.academy.minidooray.gateway.domain.gateway.UserDetail;
@@ -9,6 +10,7 @@ import com.nhn.academy.minidooray.gateway.security.details.service.CustomOAuth2M
 import com.nhn.academy.minidooray.gateway.security.handler.OauthLoginSuccessHandler;
 import com.nhn.academy.minidooray.gateway.util.RestTemplateUtil;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -22,8 +24,10 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
@@ -36,34 +40,40 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @EnableWebSecurity(debug = false)
+@EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
 @Slf4j
 public class SecurityConfig {
 
-  @Autowired
-  AuthenticationSuccessHandler successHandler;
+//  @Autowired
+//  AuthenticationSuccessHandler successHandler;
 
-  @Autowired
-  OauthLoginSuccessHandler oauthLoginSuccessHandler;
+//  @Autowired
+//  OauthLoginSuccessHandler oauthLoginSuccessHandler;
 
-  @Autowired
-  CustomOAuth2MemberService oAuth2MemberService;
+//  @Autowired
+//  CustomOAuth2MemberService oAuth2MemberService;
 //  @Autowired
 //  UserDetailsService userDetailsService;
 
-  @Autowired
-  RestTemplate restTemplate;
+//  @Autowired
+//  RestTemplate restTemplate;
 
-  @Autowired
-  PasswordEncoder passwordEncoder;
-
-  @Autowired
-  ObjectMapper objectMapper;
+//  @Autowired
+//  PasswordEncoder passwordEncoder;
+//
+//  @Autowired
+//  ObjectMapper objectMapper;
+//  @Autowired
+//  RedisTemplate<String, Object> redisTemplate;
+//  @Autowired
+//  AccountApiServerProperties accountApiServerProperties;
 
   @Bean
   public OidcUserService oidcUserService() {
@@ -72,13 +82,13 @@ public class SecurityConfig {
 
   //기본 필터 순서 - csrf - oauth - formlogin
   @Bean
-  protected SecurityFilterChain configTest(HttpSecurity http) throws Exception {
-
+  protected SecurityFilterChain configTest(HttpSecurity http, OauthLoginSuccessHandler oauthLoginSuccessHandler, CustomOAuth2MemberService oAuth2MemberService, RestTemplate restTemplate, PasswordEncoder passwordEncoder, RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper, AccountApiServerProperties accountApiServerProperties)
+      throws Exception {
 
     http.csrf().disable();
     http.anonymous().disable();
     //http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);//공부 필요
-    http.rememberMe().key(System.getenv("rememberMe_secret")).rememberMeParameter("rememberMe").userDetailsService(userDetailsService());
+    http.rememberMe().key(System.getenv("rememberMe_secret")).rememberMeParameter("rememberMe").userDetailsService(userDetailsService(restTemplate, objectMapper, accountApiServerProperties));
     http.formLogin()
         .loginProcessingUrl("/login")
         .successHandler(new AuthenticationSuccessHandler() {
@@ -90,7 +100,6 @@ public class SecurityConfig {
                             log.info("formLogin 완료. id: {}", authentication.getName());
                             template.opsForHash().put(session.getId(), "username", authentication.getName());
                             template.opsForHash().put(session.getId(), "authority", authentication.getAuthorities());
-
                             response.sendRedirect("/");
                           }
                         }
@@ -114,7 +123,7 @@ public class SecurityConfig {
         .userInfoEndpoint()
         .userService(oAuth2MemberService);
 
-    http.authenticationProvider(authenticationProvider())
+    http.authenticationProvider(authenticationProvider(passwordEncoder, restTemplate, objectMapper, accountApiServerProperties))
         .authorizeRequests()
         .antMatchers("/login/*")
         .permitAll()
@@ -131,12 +140,11 @@ public class SecurityConfig {
         .frameOptions().sameOrigin()
         .and()
         .exceptionHandling()
-        .accessDeniedPage("/error/403");
+        .accessDeniedHandler(new AccessDeniedExceptionHandler());
     //보안 헤더 설정
 
     return http.build();
   }
-
 
   @Bean
   public AuthenticationEntryPoint authenticationEntryPoint() {
@@ -144,15 +152,13 @@ public class SecurityConfig {
   }
 
   @Bean
-  public AuthenticationProvider authenticationProvider() {
+  public AuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder, RestTemplate restTemplate, ObjectMapper objectMapper, AccountApiServerProperties accountApiServerProperties) {
     DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-    authenticationProvider.setUserDetailsService(userDetailsService());
+    authenticationProvider.setUserDetailsService(userDetailsService(restTemplate, objectMapper, accountApiServerProperties));
     authenticationProvider.setPasswordEncoder(passwordEncoder);
+
     return authenticationProvider;
   }
-
-  @Autowired
-  RedisTemplate<String, Object> redisTemplate;
 
   @Bean
   @Primary
@@ -174,31 +180,41 @@ public class SecurityConfig {
 
   }
 
-  @Autowired
-  AccountApiServerProperties accountApiServerProperties;
-
-
   @Bean
-  public UserDetailsService userDetailsService() {
+  public UserDetailsService userDetailsService(RestTemplate restTemplate, ObjectMapper objectMapper, AccountApiServerProperties accountApiServerProperties) {
     return new UserDetailsService() {
       @Override
       public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        ResponseEntity<String> response = RestTemplateUtil.createQuery(restTemplate, accountApiServerProperties.getUrl(), accountApiServerProperties.getPort(), "/accounts", HttpMethod.GET, String.class, Map.of("id", username));
-
-        String pwd;
-        String id;
+        log.info("username {}",username);
+//        ResponseEntity<String> response =
+//            RestTemplateUtil.createQuery
+//                (restTemplate, accountApiServerProperties.getUrl(), accountApiServerProperties.getPort(), "/accounts", HttpMethod.GET, String.class, Map.of("id", username));
+        System.out.println(accountApiServerProperties.getFullUrl()+"/accounts?id={}");
+            JsonNode result =  restTemplate.getForEntity(accountApiServerProperties.getFullUrl()+"/accounts?id={id}", JsonNode.class,Map.of("id",username)).getBody();
+        String pwd="";
+        String id="";
         try {
-          UserDetail userDetail = objectMapper.readValue(response.getBody(), UserDetail.class);
-          pwd = userDetail.getPwd();
-          id = userDetail.getId();
+          pwd = result.get("pwd").asText();
+          System.out.println(pwd);
+          id = result.get("id").asText();
+          System.out.println(id);
 
-          return User.builder().username(id).password(pwd).authorities(new SimpleGrantedAuthority("user")).build();
-        } catch (JsonProcessingException e) {
+          return User.builder().username(id).password(pwd).authorities(new SimpleGrantedAuthority("ROLE_USER")).build();
+        } catch (Exception e) {
           e.printStackTrace();
           return null;//Todo : custom exception 던지기
         }
       }
     };
+  }
+
+  class AccessDeniedExceptionHandler implements AccessDeniedHandler {
+
+    @Override
+    public void handle(HttpServletRequest request, HttpServletResponse response,
+        AccessDeniedException ex) throws IOException, ServletException {
+      response.setStatus(403);
+    }
   }
 
 }

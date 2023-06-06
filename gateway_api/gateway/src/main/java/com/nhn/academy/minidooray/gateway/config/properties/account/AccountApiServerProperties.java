@@ -8,9 +8,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @Setter
 public class AccountApiServerProperties {
-    String url;
-    String port;
-    public String getFullUrl(){
-        return getUrl()+":"+getPort();
-    }
+
+  String url;
+  String port;
+
+  public String getFullUrl() {
+    return getUrl() + ":" + getPort();
+  }
 }

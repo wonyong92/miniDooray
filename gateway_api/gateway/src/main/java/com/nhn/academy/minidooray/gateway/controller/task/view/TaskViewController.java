@@ -21,20 +21,20 @@ public class TaskViewController {
   @GetMapping("/projects")
   public ResponseEntity<ProjectList> showMyProjects(HttpServletRequest request, Model model,
       @RequestParam(required = false, value = "size") Long size,
-      @RequestParam(required = false, value = "page") Long page){
+      @RequestParam(required = false, value = "page") Long page) {
     String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-    ProjectList myProjectsPage = taskService.findMyProjets(userName,size,page);
+    ProjectList myProjectsPage = taskService.findMyProjets(userName, size, page);
 
     return ResponseEntity.ok(myProjectsPage);
   }
 
   @GetMapping("/project/register")
-  public String showRegisterProjectPage(){
+  public String showRegisterProjectPage() {
     return "project/register";
   }
 
   @GetMapping("/{projectNo}/menu")
-  public String showProjectMenu(@PathVariable String projectNo, Model model){
+  public String showProjectMenu(@PathVariable String projectNo, Model model) {
     model.addAttribute("projectNo", projectNo);
     return "project/menu/menu";
   }

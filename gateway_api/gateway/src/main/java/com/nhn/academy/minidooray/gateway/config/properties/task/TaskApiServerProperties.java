@@ -8,9 +8,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @Setter
 public class TaskApiServerProperties {
+
   String url;
   String port;
-  public String getFullUrl(){
-    return getUrl()+":"+getPort();
+
+  public String getFullUrl() {
+    return getUrl() + ":" + getPort();
   }
 }

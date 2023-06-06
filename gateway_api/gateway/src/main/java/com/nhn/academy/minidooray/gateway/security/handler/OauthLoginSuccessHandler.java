@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,18 +22,21 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class OauthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+
   private final RedisTemplate<String, Object> redisTemplate;
   private final AccountService accountService;
   private final ObjectMapper objectMapper;
   private final PasswordEncoder encoder;
+
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
       Authentication authentication)
       throws IOException, ServletException {
 
-    System.out.println("oauth2 login success");
+    log.info("oauth2 login success");
 
     HttpSession session = request.getSession(false);
     String sessionId = session.getId();
@@ -51,13 +55,11 @@ public class OauthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     //    System.out.println(jsonNode.get("private_email"));
     //
 
-
     Map<String, Object> attribute = ((DefaultOAuth2User) authentication.getPrincipal()).getAttributes();
     String findResult = accountService.getAccount(attribute.get("id").toString());
-    System.out.println("principal : "+ SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    if(findResult.equals("no_data"))
-    {
-      System.out.println("oauth 인증 결과 데이터로 회원 정보 조회 실패 - 회원 가입 진행");
+    log.debug("principal : " + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    if (findResult.equals("no_data")) {
+      log.info("oauth 인증 결과 데이터로 회원 정보 조회 실패 - 회원 가입 진행");
       //설마 서로 다른 서비스에서 id 값이 겹치는 일이 있을까?
       AccountDto dto = new AccountDto();
       dto.setEmail(attribute.get("private_email").toString());
@@ -66,13 +68,12 @@ public class OauthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
       accountService.createAccount(dto);
 
       //private 이메일이 변경되었음을 감지하면 변경 요청까지 보내야 할까?
+    } else {
+      log.info("존재하는 회원");
     }
-    else{
-      System.out.println("존재하는 회원");
-    }
-    System.out.println("Attribute : "+attribute);
-    session.setAttribute("id",attribute.get("id"));
-    session.setAttribute("Attribute",attribute);
+    log.info("Attribute : " + attribute);
+    session.setAttribute("id", attribute.get("id"));
+    session.setAttribute("Attribute", attribute);
 
     super.onAuthenticationSuccess(request, response, authentication);
   }

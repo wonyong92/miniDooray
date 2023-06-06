@@ -21,6 +21,19 @@ public class GatewayRestController {
 
   final RestTemplate template;
   final AccountApiServerProperties accountApiServerProperties;
+  String accountUrl;
+  String taskUrl;
+  String accountPort;
+  String taskPort;
+  @Autowired
+  ObjectMapper mapper;
+  @Autowired
+  PasswordEncoder encoder;
+  @Autowired
+  ObjectMapper objectMapper;
+  @Autowired
+  AccountService accountService;
+
   @Autowired
   public GatewayRestController(RestTemplate template, AccountApiServerProperties accountApiServerProperties) {
     this.template = template;
@@ -28,34 +41,12 @@ public class GatewayRestController {
 
     accountUrl = accountApiServerProperties.getUrl();
     taskUrl = accountApiServerProperties.getUrl();
-    accountPort= accountApiServerProperties.getPort();
-    taskPort= accountApiServerProperties.getPort();
+    accountPort = accountApiServerProperties.getPort();
+    taskPort = accountApiServerProperties.getPort();
   }
 
-  String accountUrl ;
-
-
-  String taskUrl ;
-
-  String accountPort;
-
-
-  String taskPort;
-
-  @Autowired
-  ObjectMapper mapper;
-
-  @Autowired
-  PasswordEncoder encoder;
-
-  @Autowired
-  ObjectMapper objectMapper;
-
-  @Autowired
-  AccountService accountService;
-
   @GetMapping("/")
-  public String index(Authentication authentication, HttpSession session,@CookieValue(name="ACCESS_TOKEN",required = false) String ACCESSTOKEN) throws JsonProcessingException {
+  public String index(Authentication authentication, HttpSession session, @CookieValue(name = "ACCESS_TOKEN", required = false) String ACCESSTOKEN) throws JsonProcessingException {
     JsonNode jsonNode = mapper.readTree(mapper.writeValueAsString(session.getAttribute("Attribute")));
     System.out.println("private_email : " + jsonNode.get("private_email"));
     System.out.println(SecurityContextHolder.getContext().getAuthentication().getName());
