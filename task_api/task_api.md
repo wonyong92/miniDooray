@@ -115,7 +115,7 @@
 ]
 ```
 
-`GET`  `/projects/{projectId}` **프로젝트 생성**
+`POST`  `/projects/{projectId}` **프로젝트 생성**
 - request
 ```json
 {
@@ -133,7 +133,7 @@
   "status": "ACTIVATE"
 }
 ```
-`POST`  `/projects/{projectId}` **프로젝트 수정**
+`PUT`  `/projects/{projectId}` **프로젝트 수정**
 - request
 ```json
 {
