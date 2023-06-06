@@ -3,7 +3,6 @@ package com.nhnacademy.minidooray.account.command;
 import com.nhnacademy.minidooray.account.domain.AccountStatus;
 import com.nhnacademy.minidooray.account.domain.SystemAuth;
 import com.nhnacademy.minidooray.account.domain.Member;
-import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -12,7 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Setter
@@ -21,24 +19,24 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @ToString
 public class AccountDto {
-    // custom annotation
+    // custom annotation 필요성
     @NotNull @NotEmpty
-    String id;
+    private String id;
 
     @NotNull @NotEmpty
-    String email;
+    private String email;
 
     @NotNull @NotEmpty
-    String pwd;
+    private String pwd;
 
     @NotNull @NotEmpty
-    String nickname;
+    private String nickname;
 
     @NotNull @NotEmpty
-    AccountStatus accountStatus;
+    private AccountStatus accountStatus;
 
     @NotNull @NotEmpty
-    SystemAuth systemAuth;
+    private SystemAuth systemAuth;
 
     public Member createMember() {
         Member member = Member.builder()
@@ -49,7 +47,7 @@ public class AccountDto {
             .accountStatus(accountStatus)
             .systemAuth(systemAuth)
             .build();
-        
+
         return member;
     }
 }

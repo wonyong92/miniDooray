@@ -1,8 +1,11 @@
 package com.nhnacademy.minidooray.account.controller;
 
 import com.nhnacademy.minidooray.account.command.AccountDto;
+import com.nhnacademy.minidooray.account.domain.AccountStatus;
 import com.nhnacademy.minidooray.account.domain.Member;
+import com.nhnacademy.minidooray.account.domain.SystemAuth;
 import com.nhnacademy.minidooray.account.service.MemberService;
+import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +37,9 @@ public class AccountController {
 
     private final MemberService memberService;
 
+    /**
+     * bad request 400 발생..
+     */
     @PostMapping
     public ResponseEntity<Member> createMember(@RequestBody @Valid AccountDto accountDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -41,13 +47,24 @@ public class AccountController {
         }
         memberService.createMember(accountDto);
 
+        // create call check
+        log.info("call AccountController.createMember");
+        log.info("member id={}", accountDto.getId());
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    /**
+     * 인증 조건문 제외 시, 정상 호출
+     */
     @GetMapping("/{memberId}")
     public ResponseEntity<Member> getMember(@PathVariable("memberId") String memberId, @RequestHeader(name = "clientId", required = false) String clientId) {
         if (System.getenv("client_secret") != null && clientId != null && clientId.equals(System.getenv("client_secret"))) {
             Member member = memberService.getMember(memberId);
+
+            // get call check
+            log.info("call AccountController.getMember");
+            log.info("member id={}", member.getId());
 
             return ResponseEntity.ok(member);
         }
@@ -55,38 +72,45 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-//    try {
-//    } catch (MemberNotFoundException e) {
-//        // 다른 예외는 서버 오류로 처리
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//    }
-
+    /**
+     * server error 500 발생..
+     */
     @PostMapping("/{memberId}/update")
     public ResponseEntity<Member> updateMember(@PathVariable String memberId, @ModelAttribute AccountDto accountDto) {
         Member member = accountDto.createMember();
         memberService.updateMember(memberId, member);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-    @PostMapping("/{memberId}")
-    public ResponseEntity<Member> delete(@PathVariable String memberId) {
-        memberService.deleteMember(memberId);
+        // update call check
+        log.info("call AccountController.updateMember");
+        log.info("member id={}", member.getId());
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     /**
-     * 테스트용 데이터 추가
+     * 정상 호출
+     */
+    @PostMapping("/{memberId}")
+    public ResponseEntity<Member> deleteMember(@PathVariable String memberId) {
+        memberService.deleteMember(memberId);
+
+        // delete call check
+        log.info("call AccountController.deleteMember");
+        log.info("member id={}", memberId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    /**
+     * 테스트용 데이터 추가 -> DB Tool 통해서 데이터 관리 필요
      */
 //    @PostConstruct
 //    public void init() {
 //        memberService.createMember(
 //            new AccountDto("nhnacademy_test", "nhnacademy_test@gmail.com", "1234", "nhn_test",
-//                AccountStatus.REGISTERED, SystemAuth.ADMIN,
-//                IsRegisteredEnum.HAS_PERMISSION));
+//                AccountStatus.REGISTERED, SystemAuth.ADMIN));
 //        memberService.createMember(
 //            new AccountDto("kusun1020_test", "kusun1020_test@gmail.com", "0000", "ngs_test",
-//                AccountStatus.DORMANT, SystemAuth.USER, IsRegisteredEnum.NO_PERMISSION));
+//                AccountStatus.DORMANT, SystemAuth.USER));
 //    }
 }

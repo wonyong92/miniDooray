@@ -56,6 +56,8 @@ public class  DefaultMemberService implements MemberService {
         member.setNickname(updateParam.getNickname());
         member.setAccountStatus(updateParam.getAccountStatus());
         member.setSystemAuth(updateParam.getSystemAuth());
+
+        memberRepository.save(member);
     }
 
     @Override
