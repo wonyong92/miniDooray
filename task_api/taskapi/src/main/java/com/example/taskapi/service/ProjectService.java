@@ -1,14 +1,17 @@
 package com.example.taskapi.service;
 
-import com.example.taskapi.domain.MemberDto;
-import com.example.taskapi.domain.ProjNameForMemDto;
-import com.example.taskapi.domain.ProjectDetailDto;
+import com.example.taskapi.domain.*;
 
 import java.util.List;
 
 public interface ProjectService {
 
-    List<ProjectDetailDto> findAllProjectDto();
+    ProjectCreateResponseDto creatProject(ProjectCreateRequest projectCreateRequest);
+
+    ProjectUpdateResponseDto updateProject(ProjectUpdateRequest projectUpdateRequest, Integer projectId);
+
+    Integer deleteProject(Integer projectId);
+
 
     ProjectDetailDto findProjectDtoById(Integer projectId);
 
