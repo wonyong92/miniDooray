@@ -2,7 +2,7 @@
 ---
 ### 프로젝트 API
 `GET`  `/projects/{projectId}` **프로젝트 세부 조회**
-
+- response
 ```json
 {
   "projectId": 1,
@@ -72,7 +72,7 @@
 
 
 `GET`  `/projects/members/{memberId}` **멤버가 속한 프로젝트 이름조회**
-
+- response
 ```json
 {
   "memberId": "nicole",
@@ -89,7 +89,7 @@
 ```
 
 `GET`  `/projects/{projectId}/members` **프로젝트에 속한 멤버 조회**
-
+- response
 ```json
 [
   {
@@ -114,3 +114,48 @@
   }
 ]
 ```
+
+`GET`  `/projects/{projectId}` **프로젝트 생성**
+- request
+```json
+{
+  "name": "새로운 프로젝트",
+  "adminId" : "nikki"
+}
+```
+- response
+`201 created`
+```json
+{
+  "adminId": "nikki",
+  "projectId": 4,
+  "name": "새로운 프로젝트",
+  "status": "ACTIVATE"
+}
+```
+`POST`  `/projects/{projectId}` **프로젝트 수정**
+- request
+```json
+{
+  "name" : "수정된 프로젝트",
+  "status" : "ACTIVATE"
+}
+```
+- response
+```json
+{
+  "projectId": 4,
+  "name": "수정된 프로젝트",
+  "status": "ACTIVATE"
+}
+```
+
+`DELETE`  `/projects/{projectId}` **프로젝트 삭제**
+- response, 삭제된 projectId 응답반환 
+```json
+{
+  "projectId": 4
+}
+```
+
+
