@@ -2,7 +2,6 @@ package com.nhnacademy.minidooray.account.command;
 
 import com.nhnacademy.minidooray.account.domain.AccountStatus;
 import com.nhnacademy.minidooray.account.domain.SystemAuth;
-import com.nhnacademy.minidooray.account.domain.Member;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -11,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Setter
@@ -19,35 +19,22 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class AccountDto {
-    // custom annotation 필요성
-    @NotNull @NotEmpty
+
+    @NotNull @NotEmpty @Length(min = 5, max = 40)
     private String id;
 
-    @NotNull @NotEmpty
+    @NotNull @NotEmpty @Length(min = 5, max = 50)
     private String email;
 
-    @NotNull @NotEmpty
+    @NotNull @NotEmpty @Length(min = 8, max = 20)
     private String pwd;
 
-    @NotNull @NotEmpty
+    @NotNull @NotEmpty @Length(min = 2, max = 20)
     private String nickname;
 
-    @NotNull @NotEmpty
+    @NotNull
     private AccountStatus accountStatus;
 
-    @NotNull @NotEmpty
+    @NotNull
     private SystemAuth systemAuth;
-
-    public Member createMember() {
-        Member member = Member.builder()
-            .id(id)
-            .email(email)
-            .pwd(pwd)
-            .nickname(pwd)
-            .accountStatus(accountStatus)
-            .systemAuth(systemAuth)
-            .build();
-
-        return member;
-    }
 }

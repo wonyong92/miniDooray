@@ -1,15 +1,24 @@
 package com.nhnacademy.minidooray.account.domain;
 
-public enum AccountStatus {
-    REGISTERED,
-    WITHDRAWN,
-    DORMANT;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-    public String getName() {
-        return this.name();
+public enum AccountStatus {
+    REGISTERED("REGISTERED"),
+    WITHDRAWN("WITHDRAWN"),
+    DORMANT("DORMANT");
+
+    private final String value;
+
+    AccountStatus(String value) {
+        this.value = value;
     }
 
-    public boolean equalsName(String name) {
-        return this.name().equals(name);
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    public boolean equalsName(String value) {
+        return this.getValue().equals(value);
     }
 }

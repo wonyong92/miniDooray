@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -38,12 +39,12 @@ public class AccountController {
     private final MemberService memberService;
 
     /**
-     * bad request 400 발생..
+     * 회원가입
      */
     @PostMapping
     public ResponseEntity<Member> createMember(@RequestBody @Valid AccountDto accountDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            bindingResult.getFieldError("validation error");
+            throw new RuntimeException("validation error");
         }
         memberService.createMember(accountDto);
 
@@ -55,7 +56,7 @@ public class AccountController {
     }
 
     /**
-     * 인증 조건문 제외 시, 정상 호출
+     * 회원정보 조회
      */
     @GetMapping("/{memberId}")
     public ResponseEntity<Member> getMember(@PathVariable("memberId") String memberId, @RequestHeader(name = "clientId", required = false) String clientId) {
@@ -73,22 +74,21 @@ public class AccountController {
     }
 
     /**
-     * server error 500 발생..
+     * 회원정보 수정
      */
     @PostMapping("/{memberId}/update")
-    public ResponseEntity<Member> updateMember(@PathVariable String memberId, @ModelAttribute AccountDto accountDto) {
-        Member member = accountDto.createMember();
-        memberService.updateMember(memberId, member);
+    public ResponseEntity<Member> updateMember(@PathVariable String memberId, @RequestBody AccountDto accountDto) {
+        memberService.updateMember(memberId, accountDto);
 
         // update call check
         log.info("call AccountController.updateMember");
-        log.info("member id={}", member.getId());
+        log.info("member id={}", accountDto.getId());
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     /**
-     * 정상 호출
+     * 회원 탈퇴
      */
     @PostMapping("/{memberId}")
     public ResponseEntity<Member> deleteMember(@PathVariable String memberId) {
@@ -107,10 +107,10 @@ public class AccountController {
 //    @PostConstruct
 //    public void init() {
 //        memberService.createMember(
-//            new AccountDto("nhnacademy_test", "nhnacademy_test@gmail.com", "1234", "nhn_test",
+//            new AccountDto("nhnacademy_test", "nhnacademy_test@gmail.com", "12345678", "nhn_test",
 //                AccountStatus.REGISTERED, SystemAuth.ADMIN));
 //        memberService.createMember(
-//            new AccountDto("kusun1020_test", "kusun1020_test@gmail.com", "0000", "ngs_test",
+//            new AccountDto("kusun1020_test", "kusun1020_test@gmail.com", "00000000", "ngs_test",
 //                AccountStatus.DORMANT, SystemAuth.USER));
 //    }
 }

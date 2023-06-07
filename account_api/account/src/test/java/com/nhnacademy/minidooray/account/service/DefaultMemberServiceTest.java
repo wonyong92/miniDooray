@@ -94,7 +94,7 @@ class DefaultMemberServiceTest {
         String memberId = "testId";
         Member existingMember = new Member("testId", "testEmail", "testPwd", "testNickname",
             AccountStatus.REGISTERED, SystemAuth.USER);
-        Member updateParam = new Member("testId", "updatedEmail", "updatedPwd", "updatedNickname",
+        AccountDto updateParam = new AccountDto("testId", "updatedEmail", "updatedPwd", "updatedNickname",
             AccountStatus.DORMANT, SystemAuth.ADMIN);
 
         when(memberRepository.findById(eq(memberId))).thenReturn(Optional.of(existingMember));
@@ -115,7 +115,7 @@ class DefaultMemberServiceTest {
     void updateMember_NonExistingMemberId_ThrowsMemberNotFoundException() {
         // Given
         String memberId = "nonExistingId";
-        Member updateParam = new Member("testId", "updatedEmail", "updatedPwd", "updatedNickname",
+        AccountDto updateParam = new AccountDto("testId", "updatedEmail", "updatedPwd", "updatedNickname",
             AccountStatus.DORMANT, SystemAuth.ADMIN);
 
         when(memberRepository.findById(eq(memberId))).thenReturn(Optional.empty());

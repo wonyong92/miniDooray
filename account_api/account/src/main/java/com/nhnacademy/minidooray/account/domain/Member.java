@@ -29,5 +29,4 @@ public class Member {
     String nickname;
     AccountStatus accountStatus;
     SystemAuth systemAuth;
-
 }

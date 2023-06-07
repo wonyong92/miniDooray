@@ -2,7 +2,6 @@ package com.nhnacademy.minidooray.account.service;
 
 import com.nhnacademy.minidooray.account.command.AccountDto;
 import com.nhnacademy.minidooray.account.domain.Member;
-import java.util.Optional;
 
 public interface MemberService {
 
@@ -10,7 +9,7 @@ public interface MemberService {
 
     Member getMember(String memberId);
 
-    void updateMember(String memberId, Member member);
+    void updateMember(String memberId, AccountDto accountDto);
 
     void deleteMember(String memberId);
 }

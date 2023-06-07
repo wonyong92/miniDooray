@@ -1,6 +1,6 @@
 package com.nhnacademy.minidooray.account.advice;
 
-@RestControllerAdvice
+//@RestControllerAdvice
 public @interface RestControllerAdvice {
 
 }

@@ -9,14 +9,17 @@ import com.nhnacademy.minidooray.account.repository.MemberRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class  DefaultMemberService implements MemberService {
 
     private final MemberRepository memberRepository;
 
     @Override
+    @Transactional
     public String createMember(AccountDto accountDto) {
         String memberId = accountDto.getId();
 
@@ -47,10 +50,10 @@ public class  DefaultMemberService implements MemberService {
     }
 
     @Override
-    public void updateMember(String memberId, Member updateParam) {
+    @Transactional
+    public void updateMember(String memberId, AccountDto updateParam) {
         Member member = this.getMember(memberId);
 
-        member.setId(updateParam.getId());
         member.setPwd(updateParam.getPwd());
         member.setEmail(updateParam.getEmail());
         member.setNickname(updateParam.getNickname());
@@ -61,6 +64,7 @@ public class  DefaultMemberService implements MemberService {
     }
 
     @Override
+    @Transactional
     public void deleteMember(String memberId) {
         Member member = this.getMember(memberId);
         member.setAccountStatus(AccountStatus.WITHDRAWN);
