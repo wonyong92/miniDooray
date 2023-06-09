@@ -9,7 +9,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @ToString
-public class MemberDto {
+public class MemberReadResponseDto {
     private String memberId;
     private ProjectMember.Role role;
 
