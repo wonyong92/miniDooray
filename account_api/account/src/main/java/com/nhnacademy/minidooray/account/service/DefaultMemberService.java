@@ -6,6 +6,8 @@ import com.nhnacademy.minidooray.account.domain.Member;
 import com.nhnacademy.minidooray.account.ex.MemberDuplicatedException;
 import com.nhnacademy.minidooray.account.ex.MemberNotFoundException;
 import com.nhnacademy.minidooray.account.repository.MemberRepository;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,6 +49,26 @@ public class  DefaultMemberService implements MemberService {
             return findMember.get();
         }
         throw new MemberNotFoundException("Member Not Found!");
+    }
+
+    @Override
+    public List<AccountDto> getAllMembers() {
+        List<Member> members = memberRepository.findAll();
+        List<AccountDto> accountDtos = new ArrayList<>();
+
+        for (Member member : members) {
+            AccountDto accountDto = new AccountDto();
+            accountDto.setId(member.getId());
+            accountDto.setEmail(member.getEmail());
+            accountDto.setPwd(member.getPwd());
+            accountDto.setNickname(member.getNickname());
+            accountDto.setAccountStatus(member.getAccountStatus());
+            accountDto.setSystemAuth(member.getSystemAuth());
+
+            accountDtos.add(accountDto);
+        }
+
+        return accountDtos;
     }
 
     @Override

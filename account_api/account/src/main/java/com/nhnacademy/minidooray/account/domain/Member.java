@@ -11,14 +11,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "member")
 @Builder
+@Entity
+@Table(name = "member")
 public class Member {
 
     @Id

@@ -5,6 +5,7 @@ import com.nhnacademy.minidooray.account.domain.AccountStatus;
 import com.nhnacademy.minidooray.account.domain.Member;
 import com.nhnacademy.minidooray.account.domain.SystemAuth;
 import com.nhnacademy.minidooray.account.service.MemberService;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public class AccountController {
         }
         memberService.createMember(accountDto);
 
-        // create call check
+        // call createMember
         log.info("call AccountController.createMember");
         log.info("member id={}", accountDto.getId());
 
@@ -63,7 +64,7 @@ public class AccountController {
         if (System.getenv("client_secret") != null && clientId != null && clientId.equals(System.getenv("client_secret"))) {
             Member member = memberService.getMember(memberId);
 
-            // get call check
+            // call getMember
             log.info("call AccountController.getMember");
             log.info("member id={}", member.getId());
 
@@ -74,13 +75,31 @@ public class AccountController {
     }
 
     /**
+     * 회원정보 전체 조회
+     */
+    @GetMapping
+    public ResponseEntity<List<AccountDto>> getAllMembers() {
+        List<AccountDto> accountDtos = memberService.getAllMembers();
+
+        // call getAllMembers
+        log.info("call AccountController.getAllMembers");
+        log.info("member size={}", accountDtos.size());
+
+        if (accountDtos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(accountDtos);
+    }
+
+    /**
      * 회원정보 수정
      */
     @PostMapping("/{memberId}/update")
     public ResponseEntity<Member> updateMember(@PathVariable String memberId, @RequestBody AccountDto accountDto) {
         memberService.updateMember(memberId, accountDto);
 
-        // update call check
+        // call updateMember
         log.info("call AccountController.updateMember");
         log.info("member id={}", accountDto.getId());
 
@@ -94,7 +113,7 @@ public class AccountController {
     public ResponseEntity<Member> deleteMember(@PathVariable String memberId) {
         memberService.deleteMember(memberId);
 
-        // delete call check
+        // call deleteMember
         log.info("call AccountController.deleteMember");
         log.info("member id={}", memberId);
 
@@ -102,7 +121,7 @@ public class AccountController {
     }
 
     /**
-     * 테스트용 데이터 추가 -> DB Tool 통해서 데이터 관리 필요
+     * 테스트용 데이터 추가
      */
 //    @PostConstruct
 //    public void init() {

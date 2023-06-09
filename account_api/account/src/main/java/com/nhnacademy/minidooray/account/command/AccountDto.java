@@ -4,20 +4,10 @@ import com.nhnacademy.minidooray.account.domain.AccountStatus;
 import com.nhnacademy.minidooray.account.domain.SystemAuth;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
-@Getter
-@Setter
-@EqualsAndHashCode
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
+@Data
 public class AccountDto {
 
     @NotNull @NotEmpty @Length(min = 5, max = 40)
