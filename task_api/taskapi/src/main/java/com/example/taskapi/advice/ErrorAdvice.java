@@ -17,7 +17,7 @@ public class ErrorAdvice {
     }
 
     @ExceptionHandler(value = ValidationFailedException.class)
-    public ResponseEntity<ErrorDto> notFoundExceptionHandle(ValidationFailedException e) {
+    public ResponseEntity<ErrorDto> validationFailedExceptionHandle(ValidationFailedException e) {
         return new ResponseEntity<>(new ErrorDto(String.valueOf(HttpStatus.BAD_REQUEST.value()), e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 }
