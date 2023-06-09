@@ -52,45 +52,48 @@ public class DefaultProjectService implements ProjectService {
     @Override
     @Transactional
     public Integer deleteProject(Integer projectId) {
-        Integer deleteRows = projectMemberRepository.deleteAllByPk_ProjectId(projectId);
-        projectRepository.deleteById(projectId);
-        log.info("project removed, projectMembers affectedRows : {}", deleteRows);
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new NotFoundException("project not found, projectId = " + projectId));
+        project.deleteProject();
         return projectId;
     }
 
 
     @Override
-    public ProjectDetailDto findProjectDtoById(Integer projectId) {
+    public ProjectDetailReadResponseDto findProjectDtoById(Integer projectId) {
         ProjectDto projectDto = projectRepository.findProjectDtoByProjectId(projectId)
                 .orElseThrow(() -> new NotFoundException("project not found projectId = " + projectId));
-        List<MemberDto> projectMembers = projectMemberRepository.findMembersByProjectId(projectId);
-        List<TaskDto> projectTasks = taskRepository.findByProject_ProjectId(projectId)
+        List<MemberReadResponseDto> projectMembers = projectMemberRepository.findMembersByProjectId(projectId);
+        List<TaskReadResponseDto> projectTasks = taskRepository.findByProject_ProjectId(projectId)
                 .stream()
-                .map(x -> new TaskDto(x.getTaskId(), x.getTitle(), x.getMember().getMemberId()))
+                .map(x -> new TaskReadResponseDto(x.getTaskId(), x.getTitle(), x.getMember().getMemberId()))
                 .collect(Collectors.toList());
-        List<MilestoneDto> projectMilestones = milestoneRepository.findAllByProject_ProjectId(projectId)
+        List<MilestoneReadResponseDto> projectMilestones = milestoneRepository.findAllByProject_ProjectId(projectId)
                 .stream()
-                .map(x -> new MilestoneDto(x.getMilestoneId(), x.getName(), x.getStartAt(), x.getEndAt()))
+                .map(x -> new MilestoneReadResponseDto(x.getMilestoneId(), x.getName(), x.getStartAt(), x.getEndAt()))
                 .collect(Collectors.toList());
-        List<TagDto> projectTags = tagRepository.findAllByProject_ProjectId(projectId);
+        List<TagReadResponseDto> projectTags = tagRepository.findAllByProject_ProjectId(projectId);
 
-        return new ProjectDetailDto(projectDto.getProjectId(), projectDto.getName(), projectDto.getStatus(),
+        return new ProjectDetailReadResponseDto(projectDto.getProjectId(), projectDto.getName(), projectDto.getStatus(),
                 projectMembers, projectMilestones, projectTags, projectTasks);
     }
 
     @Override
-    public List<MemberDto> findAllMembersById(Integer projectId) {
-        return projectMemberRepository.findMembersByProjectId(projectId);
+    public ProjectMemberReadResponseDto findAllMembersById(Integer projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new NotFoundException("project not found, projectId = " + projectId));
+        List<MemberReadResponseDto> projectMembers = projectMemberRepository.findMembersByProjectId(project.getProjectId());
+        return new ProjectMemberReadResponseDto(project.getProjectId(), project.getStatus(), projectMembers);
     }
 
     @Override
-    public ProjNameForMemDto findProjNamesByMemberId(String memberId) {
+    public ProjNameForMemReadResponseDto findProjNamesByMemberId(String memberId) {
         boolean isExistedMember = memberRepository.existsById(memberId);
         if (!isExistedMember) {
             throw new NotFoundException("member not found, memberId = " + memberId);
         }
 
-        List<ProjectNameDto> projectNamesByMemberId = projectMemberRepository.findProjectNamesByMemberId(memberId);
-        return new ProjNameForMemDto(memberId, projectNamesByMemberId);
+        List<ProjectNameReadResponseDto> projectNamesByMemberId = projectMemberRepository.findProjectNamesByMemberId(memberId);
+        return new ProjNameForMemReadResponseDto(memberId, projectNamesByMemberId);
     }
 }

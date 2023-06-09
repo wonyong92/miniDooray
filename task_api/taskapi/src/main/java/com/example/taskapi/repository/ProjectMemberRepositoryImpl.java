@@ -1,7 +1,7 @@
 package com.example.taskapi.repository;
 
-import com.example.taskapi.domain.MemberDto;
-import com.example.taskapi.domain.ProjectNameDto;
+import com.example.taskapi.domain.MemberReadResponseDto;
+import com.example.taskapi.domain.ProjectNameReadResponseDto;
 import com.example.taskapi.entity.ProjectMember;
 import com.example.taskapi.entity.QProject;
 import com.example.taskapi.entity.QProjectMember;
@@ -17,12 +17,12 @@ public class ProjectMemberRepositoryImpl extends QuerydslRepositorySupport imple
     }
 
     @Override
-    public List<MemberDto> findMembersByProjectId(Integer projectId) {
+    public List<MemberReadResponseDto> findMembersByProjectId(Integer projectId) {
         QProjectMember qProjectMember = QProjectMember.projectMember;
 
         return from(qProjectMember)
                 .where(qProjectMember.project.projectId.eq(projectId))
-                .select(Projections.constructor(MemberDto.class, qProjectMember.member.memberId, qProjectMember.role))
+                .select(Projections.constructor(MemberReadResponseDto.class, qProjectMember.member.memberId, qProjectMember.role))
                 .fetch();
     }
 
@@ -34,7 +34,7 @@ public class ProjectMemberRepositoryImpl extends QuerydslRepositorySupport imple
      * @return
      */
     @Override
-    public List<ProjectNameDto> findProjectNamesByMemberId(String memberId) {
+    public List<ProjectNameReadResponseDto> findProjectNamesByMemberId(String memberId) {
         QProjectMember qProjectMember = QProjectMember.projectMember;
         QProject qProject = QProject.project;
 
@@ -42,7 +42,7 @@ public class ProjectMemberRepositoryImpl extends QuerydslRepositorySupport imple
                 .innerJoin(qProject)
                 .on(qProjectMember.project.projectId.eq(qProject.projectId))
                 .where(qProjectMember.member.memberId.eq(memberId))
-                .select(Projections.constructor(ProjectNameDto.class, qProject.name))
+                .select(Projections.constructor(ProjectNameReadResponseDto.class, qProject.name))
                 .fetch();
 
     }

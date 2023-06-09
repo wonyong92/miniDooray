@@ -20,17 +20,17 @@ public class ProjectRestController {
 
 
     @GetMapping("/{projectId}")
-    public ProjectDetailDto getProject(@PathVariable(name = "projectId") Integer projectId) {
+    public ProjectDetailReadResponseDto getProject(@PathVariable(name = "projectId") Integer projectId) {
         return projectService.findProjectDtoById(projectId);
     }
 
     @GetMapping("/{projectId}/members")
-    public List<MemberDto> getProjectMembers(@PathVariable(name = "projectId") Integer projectId) {
+    public ProjectMemberReadResponseDto getProjectMembers(@PathVariable(name = "projectId") Integer projectId) {
         return projectService.findAllMembersById(projectId);
     }
 
     @GetMapping("/members/{memberId}")
-    public ProjNameForMemDto getMemberInvolvedProjectNames(@PathVariable(name = "memberId") String memberId) {
+    public ProjNameForMemReadResponseDto getMemberInvolvedProjectNames(@PathVariable(name = "memberId") String memberId) {
         return projectService.findProjNamesByMemberId(memberId);
     }
 

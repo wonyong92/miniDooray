@@ -32,6 +32,9 @@ public class Project {
     @Column(name = "status")
     private Status status;
 
+    public void deleteProject() {
+        this.status = Status.TERMINATION;
+    }
     @Getter
     public enum Status {
         ACTIVATE("A", "활성"),

@@ -1,7 +1,7 @@
 package com.example.taskapi.repository;
 
-import com.example.taskapi.domain.MemberDto;
-import com.example.taskapi.domain.ProjectNameDto;
+import com.example.taskapi.domain.MemberReadResponseDto;
+import com.example.taskapi.domain.ProjectNameReadResponseDto;
 import com.example.taskapi.entity.ProjectMember;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -32,8 +32,8 @@ class ProjectMemberRepositoryTest {
 
     @Test
     void findMembersByProjectId() {
-        List<MemberDto> projectMembers = projectMemberRepository.findMembersByProjectId(1);
-        for (MemberDto projectMember : projectMembers) {
+        List<MemberReadResponseDto> projectMembers = projectMemberRepository.findMembersByProjectId(1);
+        for (MemberReadResponseDto projectMember : projectMembers) {
             System.out.println(projectMember);
         }
         Assertions.assertThat(projectMembers).isNotEmpty();
@@ -41,8 +41,8 @@ class ProjectMemberRepositoryTest {
 
     @Test
     void findProjectNamesByMemberId() {
-        List<ProjectNameDto> projectNames = projectMemberRepository.findProjectNamesByMemberId("nicole");
-        for (ProjectNameDto projectName : projectNames) {
+        List<ProjectNameReadResponseDto> projectNames = projectMemberRepository.findProjectNamesByMemberId("nicole");
+        for (ProjectNameReadResponseDto projectName : projectNames) {
             System.out.println(projectName);
         }
         Assertions.assertThat(projectNames).isNotEmpty();

@@ -13,9 +13,9 @@ public interface ProjectService {
     Integer deleteProject(Integer projectId);
 
 
-    ProjectDetailDto findProjectDtoById(Integer projectId);
+    ProjectDetailReadResponseDto findProjectDtoById(Integer projectId);
 
-    List<MemberDto> findAllMembersById(Integer projectId);
+    ProjectMemberReadResponseDto findAllMembersById(Integer projectId);
 
-    ProjNameForMemDto findProjNamesByMemberId(String memberId);
+    ProjNameForMemReadResponseDto findProjNamesByMemberId(String memberId);
 }
