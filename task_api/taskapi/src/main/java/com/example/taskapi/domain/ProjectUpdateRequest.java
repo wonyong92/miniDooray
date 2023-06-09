@@ -11,9 +11,9 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Getter
 public class ProjectUpdateRequest {
-    @NotEmpty(message = "projectId must not empty")
+    @NotEmpty(message = "projectName must not empty")
     private String name;
-    @NotNull(message = "projectId must not null")
+    @NotNull(message = "projectStatus must not null")
     @ProjectStatusSubset(anyOf = {Project.Status.TERMINATION, Project.Status.ACTIVATE, Project.Status.DORMANCY})
     private Project.Status status;
 }

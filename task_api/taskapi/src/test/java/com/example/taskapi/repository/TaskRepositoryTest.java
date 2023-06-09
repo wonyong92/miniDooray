@@ -1,6 +1,5 @@
 package com.example.taskapi.repository;
 
-import com.example.taskapi.domain.TaskDto;
 import com.example.taskapi.entity.Task;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

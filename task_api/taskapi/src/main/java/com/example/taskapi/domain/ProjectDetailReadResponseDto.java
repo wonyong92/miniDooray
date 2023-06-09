@@ -11,14 +11,13 @@ import java.util.List;
 @Getter
 @ToString
 @AllArgsConstructor
-public class ProjectDetailDto {
+public class ProjectDetailReadResponseDto {
     private Integer projectId;
     private String name;
     private Project.Status status;
-    private List<MemberDto> members;
-
-    private List<MilestoneDto> milestones;
-    private List<TagDto> tags;
-    private List<TaskDto> tasks;
+    private List<MemberReadResponseDto> members;
+    private List<MilestoneReadResponseDto> milestones;
+    private List<TagReadResponseDto> tags;
+    private List<TaskReadResponseDto> tasks;
 
 }

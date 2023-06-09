@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class TaskDto {
+public class TaskReadResponseDto {
     private Integer taskId;
     private String title;
     private String writerId;

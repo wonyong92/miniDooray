@@ -1,5 +1,6 @@
 package com.example.taskapi.entity;
 
+import com.example.taskapi.domain.TaskUpdateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @ToString
 @Table(name = "Tasks")
@@ -40,4 +40,19 @@ public class Task {
     @JoinColumn(name = "project_id")
     private Project project;
 
+
+    public Task(String title, String content, LocalDateTime createdAt, LocalDateTime modifiedAt, Member member, Project project) {
+        this.title = title;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+        this.member = member;
+        this.project = project;
+    }
+
+    public void updateTaskWithDto(TaskUpdateRequest taskUpdateRequest) {
+        this.title = taskUpdateRequest.getTitle();
+        this.content = taskUpdateRequest.getContent();
+        this.modifiedAt = LocalDateTime.now();
+    }
 }

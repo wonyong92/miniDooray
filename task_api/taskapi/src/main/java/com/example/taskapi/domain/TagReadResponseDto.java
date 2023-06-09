@@ -2,12 +2,12 @@ package com.example.taskapi.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.util.List;
+import lombok.ToString;
 
 @AllArgsConstructor
 @Getter
-public class ProjNameForMemDto {
-    String memberId;
-    List<ProjectNameDto> projectNames;
+@ToString
+public class TagReadResponseDto {
+    private Integer tagId;
+    private String name;
 }

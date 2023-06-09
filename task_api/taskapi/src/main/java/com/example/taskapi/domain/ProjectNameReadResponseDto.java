@@ -7,7 +7,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @ToString
-public class TagDto {
-    private Integer tagId;
+public class ProjectNameReadResponseDto {
     private String name;
 }
