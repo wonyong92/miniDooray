@@ -2,6 +2,7 @@ package com.example.taskapi.repository;
 
 import com.example.taskapi.domain.MemberReadResponseDto;
 import com.example.taskapi.domain.ProjectNameReadResponseDto;
+import com.example.taskapi.entity.Project;
 import com.example.taskapi.entity.ProjectMember;
 import com.example.taskapi.entity.QProject;
 import com.example.taskapi.entity.QProjectMember;
@@ -41,7 +42,7 @@ public class ProjectMemberRepositoryImpl extends QuerydslRepositorySupport imple
         return from(qProjectMember)
                 .innerJoin(qProject)
                 .on(qProjectMember.project.projectId.eq(qProject.projectId))
-                .where(qProjectMember.member.memberId.eq(memberId))
+                .where(qProjectMember.member.memberId.eq(memberId).and(qProject.status.ne(Project.Status.TERMINATION)))
                 .select(Projections.constructor(ProjectNameReadResponseDto.class, qProject.name))
                 .fetch();
 
