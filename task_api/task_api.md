@@ -1,7 +1,7 @@
 ## TASK API
 ---
 - [프로젝트 API](#프로젝트-api)
-- [Task API](#task-api)
+- [작업 API](#-api)
 
 
 
@@ -169,7 +169,7 @@
 ```
 
 
-### Task API
+###  API
 
 `GET` `http://localhost:8081/tasks/{taskId}` **Task 상세 조회**
 - response(task 에 대한 댓글, 마일스톤, 태그가 있을때)
