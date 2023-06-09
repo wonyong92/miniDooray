@@ -91,28 +91,32 @@
 `GET`  `/projects/{projectId}/members` **프로젝트에 속한 멤버 조회**
 - response
 ```json
-[
-  {
-    "memberId": "gray",
-    "role": "MEMBER"
-  },
-  {
-    "memberId": "josh",
-    "role": "MEMBER"
-  },
-  {
-    "memberId": "nikki",
-    "role": "ADMIN"
-  },
-  {
-    "memberId": "oliver",
-    "role": "MEMBER"
-  },
-  {
-    "memberId": "scarf",
-    "role": "MEMBER"
-  }
-]
+{
+  "projectId": 1,
+  "status": "TERMINATION",
+  "members": [
+    {
+      "memberId": "gray",
+      "role": "MEMBER"
+    },
+    {
+      "memberId": "josh",
+      "role": "MEMBER"
+    },
+    {
+      "memberId": "nikki",
+      "role": "ADMIN"
+    },
+    {
+      "memberId": "oliver",
+      "role": "MEMBER"
+    },
+    {
+      "memberId": "scarf",
+      "role": "MEMBER"
+    }
+  ]
+}
 ```
 
 `POST`  `/projects/{projectId}` **프로젝트 생성**
