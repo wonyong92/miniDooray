@@ -2,6 +2,7 @@
 ---
 - [프로젝트 API](#프로젝트-api)
 - [작업 API](#작업-api)
+- [작업 태그 API](#작업-태그-api)
 
 
 
@@ -278,3 +279,41 @@
   "taskId": 1
 }
 ```
+
+### 작업 태그 API
+
+`POST` `http://localhost:8081/taskTags` **작업에 태그 생성**
+- request
+
+```json
+{
+  "taskId": 3,
+  "tagIds" : [8, 9]
+}
+```
+- response
+`201 created`
+```json
+{
+  "taskId": 3,
+  "tagIds" : [8, 9]
+}
+
+```
+
+
+`DELETE` `http://localhost:8081/taskTags` **작업에 태그 삭제**
+- request
+```json
+{
+  "taskId": 3,
+  "tagIds" : [8, 9]
+}
+```
+- response
+```json
+{
+  "taskId": 3,
+  "tagIds" : [8, 9]
+}
+
