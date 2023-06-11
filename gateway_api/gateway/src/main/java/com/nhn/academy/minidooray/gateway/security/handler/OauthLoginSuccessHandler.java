@@ -12,11 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +31,8 @@ public class OauthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
   private final AccountService accountService;
   private final ObjectMapper objectMapper;
   private final PasswordEncoder encoder;
+  @Autowired
+  RememberMeServices rememberMeServices;
 
 
   @Override
@@ -36,7 +40,7 @@ public class OauthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
       Authentication authentication)
       throws IOException, ServletException {
 
-    log.info("oauth2 login success");
+    log.info("oauth2 login success {} ", request.getRequestURI());
 
     HttpSession session = request.getSession(false);
     String sessionId = session.getId();
@@ -58,6 +62,7 @@ public class OauthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     Map<String, Object> attribute = ((DefaultOAuth2User) authentication.getPrincipal()).getAttributes();
     String findResult = accountService.getAccount(attribute.get("id").toString());
     log.debug("principal : " + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
     if (findResult.equals("no_data")) {
       log.info("oauth 인증 결과 데이터로 회원 정보 조회 실패 - 회원 가입 진행");
       //설마 서로 다른 서비스에서 id 값이 겹치는 일이 있을까?
@@ -67,6 +72,8 @@ public class OauthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
       dto.setPwd(encoder.encode("teststetetset"));
       accountService.createAccount(dto);
 
+      rememberMeServices.loginSuccess(request, response, authentication);
+
       //private 이메일이 변경되었음을 감지하면 변경 요청까지 보내야 할까?
     } else {
       log.info("존재하는 회원");
@@ -75,7 +82,7 @@ public class OauthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     session.setAttribute("id", attribute.get("id"));
     session.setAttribute("Attribute", attribute);
 
-    super.onAuthenticationSuccess(request, response, authentication);
+    //super.onAuthenticationSuccess(request, response, authentication);
   }
 
 }

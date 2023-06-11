@@ -23,7 +23,7 @@ public class TaskViewController {
       @RequestParam(required = false, value = "size") Long size,
       @RequestParam(required = false, value = "page") Long page) {
     String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-    ProjectList myProjectsPage = taskService.findMyProjets(userName, size, page);
+    ProjectList myProjectsPage = taskService.findProject(userName, size, page);
 
     return ResponseEntity.ok(myProjectsPage);
   }

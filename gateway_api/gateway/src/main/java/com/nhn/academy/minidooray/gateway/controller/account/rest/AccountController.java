@@ -7,6 +7,7 @@ import com.nhn.academy.minidooray.gateway.domain.account.AccountDto;
 import com.nhn.academy.minidooray.gateway.domain.account.AccountUpdateDto;
 import com.nhn.academy.minidooray.gateway.service.account.service.AccountService;
 import java.net.URI;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,13 +42,11 @@ public class AccountController {
   ObjectMapper objectMapper;
   @Autowired
   AccountService accountService;
-  @Autowired
-  HttpSession session;
+
   @Autowired
   RedisTemplate<String, Object> redisTemplate;
   @Autowired
   AccountApiServerProperties properties;
-
 
   @Autowired
   public AccountController(RestTemplate template, AccountApiServerProperties accountApiServerProperties) {
@@ -62,15 +61,16 @@ public class AccountController {
 
   @GetMapping("/account")
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'USER')")
-  public ResponseEntity<String> getMemberData(@RequestParam(name = "id") String id) throws JsonProcessingException {
+  public ResponseEntity<String> getMemberData(HttpServletRequest request,@RequestParam(name = "id") String id) throws JsonProcessingException {
     String result = accountService.getAccount(id);
+    HttpSession session = request.getSession(false);//서블릿 세션 가져오기
     log.info("session 상태 : " + session.getId());
     redisTemplate.opsForHash().put(session.getId(), "testValue", "test");
     log.info("redis session : " + redisTemplate.opsForHash().get(session.getId(), "testValue"));
+
     return ResponseEntity.ok()
         .header("Custom-Header", "Value")
         .body(result);
-
   }
 
   @PostMapping("/account")

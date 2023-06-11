@@ -15,4 +15,8 @@ public class TaskApiServerProperties {
   public String getFullUrl() {
     return getUrl() + ":" + getPort();
   }
+
+  String getProject;
+  String putProject;
+  String delProject;
 }

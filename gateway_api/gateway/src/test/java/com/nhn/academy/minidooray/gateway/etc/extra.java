@@ -2,6 +2,9 @@ package com.nhn.academy.minidooray.gateway.etc;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhn.academy.minidooray.gateway.config.properties.account.AccountApiServerProperties;
 import com.nhn.academy.minidooray.gateway.config.properties.task.TaskApiServerProperties;
 import com.nhn.academy.minidooray.gateway.config.security.SecurityConfig;
@@ -15,6 +18,8 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
@@ -53,6 +58,50 @@ class extra {
   void restTemplate_test(){
 
   }
+
+  @Autowired
+  ObjectMapper objectMapper;
+
+
+
+  @Test
+  void getProjectByProjectId() throws JsonProcessingException {
+
+    JsonNode node = restTemplate.getForObject("http://localhost:8081/projects/{projectId}",JsonNode.class,1);
+
+    assertThat(node.get("members").get(0).get("memberId").asText()).isEqualTo("gray");
+    assertThat(node.get("projectId").asText()).isEqualTo("1");
+
+  }
+
+  @Test
+  void getProjectMembersByProjectId() throws JsonProcessingException {
+
+    JsonNode[] node = restTemplate.getForObject("http://localhost:8081/projects/{projectId}/members",JsonNode[].class,1);
+
+    assertThat(node[0].get("memberId").asText()).isEqualTo("gray");
+  }
+
+  @Test
+  void createProject() throws JsonProcessingException {
+
+    HttpEntity<String> body = new HttpEntity<>("{\n"
+        + "  \"adminId\": \"gray,\",\n"
+        + "  \"projectId\": \"10\",\n"
+        + "  \"name\": \"test\",\n"
+        + "  \"status\": \"ACTIVATE\"\n"
+        + "}", null);
+    JsonNode node = restTemplate.postForObject("http://localhost:8081/projects",body,JsonNode.class);
+
+    assertThat(node.get("memberId").asText()).isEqualTo("gray");
+  }
+
+
+
+
+
+
+
 
 
 }

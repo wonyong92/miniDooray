@@ -31,31 +31,34 @@ public class AuthorityCheckerInterceptor implements HandlerInterceptor {
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
     String requestUri = request.getRequestURI() + request.getServletPath();
-    log.info("요청 URI : {}", requestUri);
+    log.info("요청 URI : {}  {}", requestUri,request.getServletPath());
     log.info("account full : " + accountApiServerProperties.getFullUrl());
+    request.getParameter("projectId");
+    if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains("ROLE_ADMIN"))
+    {
+      return true;
+    }
+
     if (requestUri.matches("^.*(project|projects).*$")) {
-      System.out.println("프로젝트 권한 확인");
-      switch (request.getMethod()) {
-        case "GET":
-          break;
-        case "POST":
-        case "PUT":
-        case "UPDATE":
-        case "DELELTE":
-          System.out.println("작성자인지 확인");
-          break;
-        default:
-          System.out.println("no method");
+      if(request.getMethod().equals("POST"))
+      {
+        return true;
       }
 
-    } else if (requestUri.matches("^.*(task|tasks).*$")) {
+      log.info("프로젝트 멤버 확인_현재 로그인 아이디: {} {} ",request.getParameter("projectId") ,SecurityContextHolder.getContext().getAuthentication().getName());
+      boolean result = checkMemberOfProject(request.getParameter("projectId"));
+      log.info("인증 확인 : {}", result);
+      return result;
+    }
+    else if (requestUri.matches("^.*(task|tasks).*$")) {
       System.out.println("태스크 권한 확인");
-    } else if (requestUri.matches("^.*(account|accounts).*$")) {
+    }
+    else if (requestUri.matches("^.*(account|accounts).*$")) {
       log.info("어카운트 권한 확인 ");
       switch (request.getMethod()) {
         case "GET":
-          log.info("프로젝트 멤버 확인 : {}", SecurityContextHolder.getContext().getAuthentication().getName());
-          boolean result = checkMemberOfProject(SecurityContextHolder.getContext().getAuthentication().getName(), "1");
+          log.info("프로젝트 멤버 확인_현재 로그인 아이디: {}", SecurityContextHolder.getContext().getAuthentication().getName());
+          boolean result = checkMemberOfProject("1");
           log.info("인증 확인 : {}", result);
           return result;
 
@@ -69,26 +72,22 @@ public class AuthorityCheckerInterceptor implements HandlerInterceptor {
           System.out.println("no method");
       }
     }
-
-    if (handler instanceof HandlerMethod) {
-      HandlerMethod handlerMethod = (HandlerMethod) handler;
-      // 컨트롤러 메소드에 접근 권한 어노테이션 확인
-      if (handlerMethod.hasMethodAnnotation(PreAuthorize.class)) {
-        // 접근 권한 체크 로직 수행
-        // 필요한 경우 접근 거부 응답 처리 등을 수행할 수 있음
-        System.out.println(handlerMethod.getMethodAnnotation(PreAuthorize.class).value());
-      }
-    }
-
     return true;
   }
 
-  public boolean checkMemberOfProject(String clientId, String projectId) throws JsonProcessingException {
-    String requestUrl = taskApiServerProperties.getFullUrl() + "/projects/members?proejctId=" + projectId;
-    log.debug("check task api - get pr members full url : " + requestUrl);
-    return Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(requestUrl, JsonNode[].class, projectId)))
+  public boolean checkMemberOfProject(String projectId) throws JsonProcessingException {
+    String clientId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+    String requestUrl = taskApiServerProperties.getFullUrl() + "/projects/"+projectId+"/members";
+    log.info("check task api - get pr members full url : {}  {} ", requestUrl, clientId);
+    JsonNode result = restTemplate.getForObject(requestUrl, JsonNode.class);
+    System.out.println("result : "+result.get("members"));
+
+    JsonNode[] members = objectMapper.readValue(result.get("members").toPrettyString(),JsonNode[].class);
+
+    return Arrays.stream(members)
         .anyMatch(node ->
-            node.get("id").toString().equals("\"" + clientId + "\"")
+            node.get("memberId").toString().equals("\"" + clientId + "\"")
         );
   }
 

@@ -71,7 +71,7 @@ public class GatewayApplication implements WebMvcConfigurer, ApplicationContextA
 
   @Bean
   public RestTemplate restTemplate() {
-    //resttemplate 동작 방식의 차이 발생 - connectin pool 이용 vs socket 이용
+    //rest template 동작 방식의 차이 발생 - connection pool 이용 vs socket 이용
     HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
     requestFactory.setConnectTimeout(3000);
     requestFactory.setConnectionRequestTimeout(3000);

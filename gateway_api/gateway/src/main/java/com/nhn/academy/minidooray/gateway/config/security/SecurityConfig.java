@@ -1,16 +1,12 @@
 package com.nhn.academy.minidooray.gateway.config.security;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhn.academy.minidooray.gateway.config.properties.account.AccountApiServerProperties;
-import com.nhn.academy.minidooray.gateway.domain.gateway.UserDetail;
 import com.nhn.academy.minidooray.gateway.security.details.service.CustomOAuth2MemberService;
 import com.nhn.academy.minidooray.gateway.security.handler.OauthLoginSuccessHandler;
-import com.nhn.academy.minidooray.gateway.util.RestTemplateUtil;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -22,14 +18,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -43,6 +38,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
@@ -75,10 +71,10 @@ public class SecurityConfig {
 //  @Autowired
 //  AccountApiServerProperties accountApiServerProperties;
 
-  @Bean
-  public OidcUserService oidcUserService() {
-    return new OidcUserService();
-  }
+//  @Bean
+//  public OidcUserService oidcUserService() {
+//    return new OidcUserService();
+//  }
 
   //기본 필터 순서 - csrf - oauth - formlogin
   @Bean
@@ -87,8 +83,8 @@ public class SecurityConfig {
 
     http.csrf().disable();
     http.anonymous().disable();
-    //http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);//공부 필요
-    http.rememberMe().key(System.getenv("rememberMe_secret")).rememberMeParameter("rememberMe").userDetailsService(userDetailsService(restTemplate, objectMapper, accountApiServerProperties));
+    http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);//공부 필요
+    http.rememberMe().rememberMeServices(rememberMeServices(userDetailsService(restTemplate,objectMapper,accountApiServerProperties)));
     http.formLogin()
         .loginProcessingUrl("/login")
         .successHandler(new AuthenticationSuccessHandler() {
@@ -119,7 +115,7 @@ public class SecurityConfig {
         .baseUri("/login")
         .and()
         .successHandler(oauthLoginSuccessHandler)
-        //.defaultSuccessUrl("/") //successHandler 를 덮어쓴다
+        .defaultSuccessUrl("/") //successHandler 를 덮어쓴다
         .userInfoEndpoint()
         .userService(oAuth2MemberService);
 
@@ -144,6 +140,16 @@ public class SecurityConfig {
     //보안 헤더 설정
 
     return http.build();
+  }
+
+  @Bean
+  public TokenBasedRememberMeServices rememberMeServices(UserDetailsService userDetailsService) {
+    TokenBasedRememberMeServices rememberMeServices = new TokenBasedRememberMeServices(System.getenv("rememberMe_secret"), userDetailsService);
+    System.out.println("rememberme 서비스 동작");
+    rememberMeServices.setAlwaysRemember(false
+    );
+    // Remember Me 서비스의 설정 작업을 수행한다.
+    return rememberMeServices;
   }
 
   @Bean
@@ -199,7 +205,7 @@ public class SecurityConfig {
           id = result.get("id").asText();
           System.out.println(id);
 
-          return User.builder().username(id).password(pwd).authorities(new SimpleGrantedAuthority("ROLE_USER")).build();
+          return User.builder().username(id).password(pwd).authorities(new SimpleGrantedAuthority("ROLE_MEMBER")).build();
         } catch (Exception e) {
           e.printStackTrace();
           return null;//Todo : custom exception 던지기
