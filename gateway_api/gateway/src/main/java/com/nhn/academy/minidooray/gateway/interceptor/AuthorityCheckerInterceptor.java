@@ -11,10 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -31,29 +29,25 @@ public class AuthorityCheckerInterceptor implements HandlerInterceptor {
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
     String requestUri = request.getRequestURI() + request.getServletPath();
-    log.info("요청 URI : {}  {}", requestUri,request.getServletPath());
+    log.info("요청 URI : {}  {}", requestUri, request.getServletPath());
     log.info("account full : " + accountApiServerProperties.getFullUrl());
-    request.getParameter("projectId");
-    if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains("ROLE_ADMIN"))
-    {
+
+    if (request.getParameter("projectId") == null || SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains("ROLE_ADMIN")) {
       return true;
     }
 
     if (requestUri.matches("^.*(project|projects).*$")) {
-      if(request.getMethod().equals("POST"))
-      {
+      if (request.getMethod().equals("POST")) {
         return true;
       }
 
-      log.info("프로젝트 멤버 확인_현재 로그인 아이디: {} {} ",request.getParameter("projectId") ,SecurityContextHolder.getContext().getAuthentication().getName());
+      log.info("프로젝트 멤버 확인_현재 로그인 아이디: {} {} ", request.getParameter("projectId"), SecurityContextHolder.getContext().getAuthentication().getName());
       boolean result = checkMemberOfProject(request.getParameter("projectId"));
       log.info("인증 확인 : {}", result);
       return result;
-    }
-    else if (requestUri.matches("^.*(task|tasks).*$")) {
+    } else if (requestUri.matches("^.*(task|tasks).*$")) {
       System.out.println("태스크 권한 확인");
-    }
-    else if (requestUri.matches("^.*(account|accounts).*$")) {
+    } else if (requestUri.matches("^.*(account|accounts).*$")) {
       log.info("어카운트 권한 확인 ");
       switch (request.getMethod()) {
         case "GET":
@@ -78,12 +72,12 @@ public class AuthorityCheckerInterceptor implements HandlerInterceptor {
   public boolean checkMemberOfProject(String projectId) throws JsonProcessingException {
     String clientId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-    String requestUrl = taskApiServerProperties.getFullUrl() + "/projects/"+projectId+"/members";
+    String requestUrl = taskApiServerProperties.getFullUrl() + "/projects/" + projectId + "/members";
     log.info("check task api - get pr members full url : {}  {} ", requestUrl, clientId);
     JsonNode result = restTemplate.getForObject(requestUrl, JsonNode.class);
-    System.out.println("result : "+result.get("members"));
+    System.out.println("result : " + result.get("members"));
 
-    JsonNode[] members = objectMapper.readValue(result.get("members").toPrettyString(),JsonNode[].class);
+    JsonNode[] members = objectMapper.readValue(result.get("members").toPrettyString(), JsonNode[].class);
 
     return Arrays.stream(members)
         .anyMatch(node ->

@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class ProjectCreateResponseDto {
+
   private String adminId;
   private Integer projectId;
   private String name;

@@ -11,12 +11,12 @@ public class TaskApiServerProperties {
 
   String url;
   String port;
+  String getProject;
+  String putProject;
+  String delProject;
+  String getProjects;
 
   public String getFullUrl() {
     return getUrl() + ":" + getPort();
   }
-
-  String getProject;
-  String putProject;
-  String delProject;
 }

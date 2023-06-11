@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class ProjectUpdateRequest {
+
   private String name;
   private String status;
 }

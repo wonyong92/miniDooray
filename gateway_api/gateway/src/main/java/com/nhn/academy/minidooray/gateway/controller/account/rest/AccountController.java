@@ -61,7 +61,7 @@ public class AccountController {
 
   @GetMapping("/account")
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'USER')")
-  public ResponseEntity<String> getMemberData(HttpServletRequest request,@RequestParam(name = "id") String id) throws JsonProcessingException {
+  public ResponseEntity<String> getMemberData(HttpServletRequest request, @RequestParam(name = "id") String id) throws JsonProcessingException {
     String result = accountService.getAccount(id);
     HttpSession session = request.getSession(false);//서블릿 세션 가져오기
     log.info("session 상태 : " + session.getId());

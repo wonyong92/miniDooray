@@ -32,7 +32,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -84,7 +83,7 @@ public class SecurityConfig {
     http.csrf().disable();
     http.anonymous().disable();
     http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);//공부 필요
-    http.rememberMe().rememberMeServices(rememberMeServices(userDetailsService(restTemplate,objectMapper,accountApiServerProperties)));
+    http.rememberMe().rememberMeServices(rememberMeServices(userDetailsService(restTemplate, objectMapper, accountApiServerProperties)));
     http.formLogin()
         .loginProcessingUrl("/login")
         .successHandler(new AuthenticationSuccessHandler() {
@@ -191,14 +190,14 @@ public class SecurityConfig {
     return new UserDetailsService() {
       @Override
       public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        log.info("username {}",username);
+        log.info("username {}", username);
 //        ResponseEntity<String> response =
 //            RestTemplateUtil.createQuery
 //                (restTemplate, accountApiServerProperties.getUrl(), accountApiServerProperties.getPort(), "/accounts", HttpMethod.GET, String.class, Map.of("id", username));
-        System.out.println(accountApiServerProperties.getFullUrl()+"/accounts?id={}");
-            JsonNode result =  restTemplate.getForEntity(accountApiServerProperties.getFullUrl()+"/accounts?id={id}", JsonNode.class,Map.of("id",username)).getBody();
-        String pwd="";
-        String id="";
+        System.out.println(accountApiServerProperties.getFullUrl() + "/accounts?id={}");
+        JsonNode result = restTemplate.getForEntity(accountApiServerProperties.getFullUrl() + "/accounts?id={id}", JsonNode.class, Map.of("id", username)).getBody();
+        String pwd = "";
+        String id = "";
         try {
           pwd = result.get("pwd").asText();
           System.out.println(pwd);

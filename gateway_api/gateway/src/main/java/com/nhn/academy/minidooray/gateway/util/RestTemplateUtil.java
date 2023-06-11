@@ -39,7 +39,7 @@ public class RestTemplateUtil {
     String clientId = System.getenv("client_secret");
 
     UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url + ":" + port + path);
-    for (Map.Entry<String,Object> entry : params.entrySet()) {
+    for (Map.Entry<String, Object> entry : params.entrySet()) {
       builder.queryParam(entry.getKey(), entry.getKey());
     }
     HttpHeaders headers = new HttpHeaders();

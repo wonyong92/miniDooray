@@ -61,7 +61,7 @@ public class AccountService {
   }
 
   public ResponseEntity<Boolean> checkExistId(String id) {
-    ResponseEntity<Boolean> result = template.postForEntity(accountApiFullUrl + "/accounts/exist/id", new HttpEntity<Map<String,String>>(Map.of("clientId", id), null), Boolean.class);
+    ResponseEntity<Boolean> result = template.postForEntity(accountApiFullUrl + "/accounts/exist/id", new HttpEntity<Map<String, String>>(Map.of("clientId", id), null), Boolean.class);
     if (result.getStatusCodeValue() != 200) {
       log.info("status code check {}", result.getStatusCodeValue());
       return ResponseEntity.ok(false);
@@ -70,7 +70,7 @@ public class AccountService {
   }
 
   public ResponseEntity<Boolean> checkExistEmail(String email) {
-    ResponseEntity<Boolean> result = template.postForEntity(accountApiFullUrl + "/accounts/exist/email", new HttpEntity<Map<String,String>>(Map.of("clientEmail", email), null), Boolean.class);
+    ResponseEntity<Boolean> result = template.postForEntity(accountApiFullUrl + "/accounts/exist/email", new HttpEntity<Map<String, String>>(Map.of("clientEmail", email), null), Boolean.class);
     if (result.getStatusCodeValue() != 200) {
       log.info("status code check {}", result.getStatusCodeValue());
       return ResponseEntity.ok(false);
