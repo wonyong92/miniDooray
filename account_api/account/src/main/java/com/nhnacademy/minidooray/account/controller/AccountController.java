@@ -57,9 +57,9 @@ public class AccountController {
     }
 
     /**
-     * 회원정보 조회
+     * 회원정보 기본 조회
      */
-    @GetMapping("/{memberId}")
+    @GetMapping("/{memberId}/detail")
     public ResponseEntity<Member> getMember(@PathVariable("memberId") String memberId, @RequestHeader(name = "clientId", required = false) String clientId) {
         if (System.getenv("client_secret") != null && clientId != null && clientId.equals(System.getenv("client_secret"))) {
             Member member = memberService.getMember(memberId);
@@ -93,10 +93,89 @@ public class AccountController {
     }
 
     /**
+     * 회원정보 아이디 조회
+     */
+    @GetMapping("/{memberId}")
+    public ResponseEntity<AccountDto> getMemberById(@PathVariable String memberId) {
+        Member member = memberService.getMember(memberId);
+
+        AccountDto accountDto = new AccountDto();
+        accountDto.setId(member.getId());
+        accountDto.setEmail(member.getEmail());
+        accountDto.setPwd(member.getPwd());
+        accountDto.setNickname(member.getNickname());
+        accountDto.setAccountStatus(member.getAccountStatus());
+        accountDto.setSystemAuth(member.getSystemAuth());
+
+        // call getMemberById
+        log.info("call AccountController.getMemberById");
+        log.info("member id={}", member.getId());
+
+        return ResponseEntity.ok(accountDto);
+    }
+
+    /**
+     * 회원정보 비밀번호 조회
+     */
+    @GetMapping("/{memberId}/password")
+    public ResponseEntity<String> getPasswordById(@PathVariable String memberId) {
+        Member member = memberService.getMember(memberId);
+
+        // call getPasswordById
+        log.info("call AccountController.getPasswordById");
+        log.info("member id={}", member.getId());
+
+        return ResponseEntity.ok(member.getPwd());
+    }
+
+    /**
+     * 회원정보 이메일 조회
+     */
+    @GetMapping("/{memberId}/email")
+    public ResponseEntity<String> getEmailById(@PathVariable String memberId) {
+        Member member = memberService.getMember(memberId);
+
+        // call getEmailById
+        log.info("call AccountController.getEmailById");
+        log.info("member id={}", member.getId());
+
+        return ResponseEntity.ok(member.getEmail());
+    }
+
+    /**
+     * 회원정보 로그인 조회
+     */
+    @PostMapping("/login")
+    public ResponseEntity<AccountDto> loginMember(@RequestBody @Valid AccountDto loginRequest) {
+        String memberId = loginRequest.getId();
+        String password = loginRequest.getPwd();
+
+        Member member = memberService.getMember(memberId);
+
+        if (member.getPwd().equals(password)) {
+            AccountDto accountDto = new AccountDto();
+            accountDto.setId(member.getId());
+            accountDto.setEmail(member.getEmail());
+            accountDto.setPwd(member.getPwd());
+            accountDto.setNickname(member.getNickname());
+            accountDto.setAccountStatus(member.getAccountStatus());
+            accountDto.setSystemAuth(member.getSystemAuth());
+
+            // call loginMember
+            log.info("call AccountController.loginMember");
+            log.info("member id={}", member.getId());
+
+            return ResponseEntity.ok(accountDto);
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    /**
      * 회원정보 수정
      */
     @PostMapping("/{memberId}/update")
-    public ResponseEntity<Member> updateMember(@PathVariable String memberId, @RequestBody AccountDto accountDto) {
+    public ResponseEntity<Member> updateMember(@PathVariable String memberId, @RequestBody @Valid AccountDto accountDto) {
         memberService.updateMember(memberId, accountDto);
 
         // call updateMember

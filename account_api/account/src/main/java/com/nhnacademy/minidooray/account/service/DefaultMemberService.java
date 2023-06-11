@@ -26,7 +26,10 @@ public class  DefaultMemberService implements MemberService {
         String memberId = accountDto.getId();
 
         if (memberRepository.existsById(memberId)) {
-            throw new MemberDuplicatedException("Member already exists!");
+            throw new MemberDuplicatedException("Member Id already exists!");
+        }
+        if (memberRepository.existsByEmail(accountDto.getEmail())) {
+            throw new MemberDuplicatedException("Member Email already exists!");
         }
 
         Member member = Member.builder()
