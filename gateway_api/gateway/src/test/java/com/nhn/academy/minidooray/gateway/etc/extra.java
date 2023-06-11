@@ -6,22 +6,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhn.academy.minidooray.gateway.config.properties.account.AccountApiServerProperties;
-import com.nhn.academy.minidooray.gateway.config.properties.task.TaskApiServerProperties;
+import com.nhn.academy.minidooray.gateway.config.properties.task.ProjectApiServerProperties;
 import com.nhn.academy.minidooray.gateway.config.security.SecurityConfig;
 import com.nhn.academy.minidooray.gateway.config.webconfig.GatewayApplication;
-import java.io.ObjectInputFilter.Config;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootTest
@@ -31,11 +25,11 @@ class extra {
   @Autowired
   AccountApiServerProperties accountApiServerProperties;
   @Autowired
-  TaskApiServerProperties taskApiServerProperties;
+  ProjectApiServerProperties projectApiServerProperties;
   @Test
   void configurationProperties_getFullUrl_test (){
     assertThat(accountApiServerProperties.getFullUrl()).isEqualTo(accountApiServerProperties.getUrl()+":"+accountApiServerProperties.getPort());
-    assertThat(taskApiServerProperties.getFullUrl()).isEqualTo(taskApiServerProperties.getUrl()+":"+taskApiServerProperties.getPort());
+    assertThat(projectApiServerProperties.getFullUrl()).isEqualTo(projectApiServerProperties.getUrl()+":"+ projectApiServerProperties.getPort());
   }
 
 

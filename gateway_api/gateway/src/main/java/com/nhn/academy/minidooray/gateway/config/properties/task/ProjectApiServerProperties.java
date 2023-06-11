@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "api.task")
 @Getter
 @Setter
-public class TaskApiServerProperties {
+public class ProjectApiServerProperties {
 
   String url;
   String port;
@@ -15,6 +15,12 @@ public class TaskApiServerProperties {
   String putProject;
   String delProject;
   String getProjects;
+  String postProject;
+  String getTask;
+  String postTask;
+  String putTask;
+  String delTask;
+
 
   public String getFullUrl() {
     return getUrl() + ":" + getPort();

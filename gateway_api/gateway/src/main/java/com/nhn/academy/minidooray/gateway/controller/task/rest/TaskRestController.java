@@ -1,53 +1,76 @@
 package com.nhn.academy.minidooray.gateway.controller.task.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.nhn.academy.minidooray.gateway.domain.task.request.modify.ProjectUpdateRequest;
-import com.nhn.academy.minidooray.gateway.domain.task.request.register.ProjectCreateDto;
-import com.nhn.academy.minidooray.gateway.domain.task.response.register.ProjectCreateResponseDto;
+import com.nhn.academy.minidooray.gateway.domain.task.request.modify.TaskUpdateRequestDto;
+import com.nhn.academy.minidooray.gateway.domain.task.request.register.TaskCreateDto;
+import com.nhn.academy.minidooray.gateway.domain.task.response.register.TaskCreateResponseDto;
 import com.nhn.academy.minidooray.gateway.service.task.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @Controller
 @RequiredArgsConstructor
 public class TaskRestController {
-
   private final TaskService taskService;
-
-  @PostMapping("/project")
-  public ResponseEntity<ProjectCreateResponseDto> createProject(@RequestBody ProjectCreateDto dto) {
-    dto.setAdminId(SecurityContextHolder.getContext().getAuthentication().getName());
-    return ResponseEntity.created(null).body(taskService.createProject(dto));
+  @GetMapping("/task")
+  public ResponseEntity<String> readTask(
+      @RequestParam Long taskId) {
+    return ResponseEntity.ok(taskService.getTask(taskId));
   }
 
-  @GetMapping("/project")
-  public ResponseEntity<String> readProject(@RequestParam String projectId) throws JsonProcessingException {
+  @PostMapping("/task")
+  public ResponseEntity<String> createTask(@RequestBody TaskCreateDto dto,@RequestParam Integer projectId){
 
-    return ResponseEntity.ok(taskService.getProject(projectId));
+    return ResponseEntity.created(null).body(taskService.registerTask(dto,projectId));
   }
 
-  @PutMapping("/project")
-  public ResponseEntity<Void> test(@RequestParam String projectId, @RequestBody ProjectUpdateRequest dto) {
-    taskService.updateProject(projectId, dto);
+  @PutMapping("/task")
+  public ResponseEntity<Void> updateTask(@RequestBody TaskUpdateRequestDto dto,@RequestParam Integer taskId)
+  {
+    taskService.updateTask(dto,taskId);
     return ResponseEntity.ok().build();
   }
 
-  @DeleteMapping("/project")
-  public ResponseEntity<Void> deleteProject(@RequestParam String projectId) {
-    taskService.deleteProject(projectId);
+  @DeleteMapping("/task")
+  public ResponseEntity<Void> deleteTask(@RequestParam Integer taskId) {
+    taskService.deleteTask(taskId);
     return ResponseEntity.ok().build();
   }
 
-  @GetMapping("/project/names")
-  public ResponseEntity<String> getMyProjects() {
-    return ResponseEntity.ok(taskService.getProjects());
-  }
+//  @PostMapping
+//  @ResponseStatus(HttpStatus.CREATED)
+//  public TaskCreateResponseDto createTask(@RequestBody @Validated TaskCreateRequest taskCreateRequest, BindingResult bindingResult) {
+//    if (bindingResult.hasErrors()) {
+//      throw new ValidationFailedException(bindingResult);
+//    }
+//    return taskService.createTask(taskCreateRequest);
+//  }
+//
+//  @PutMapping("/{taskId}")
+//  public TaskUpdateResponseDto updateTask(@PathVariable(name = "taskId") Integer taskId,
+//      @RequestBody @Validated TaskUpdateRequest taskUpdateRequest,
+//      BindingResult bindingResult) {
+//    if (bindingResult.hasErrors()) {
+//      throw new ValidationFailedException(bindingResult);
+//    }
+//    return taskService.updateTask(taskUpdateRequest, taskId);
+//  }
+//
+//  @DeleteMapping("/{taskId}")
+//  public TaskDeleteResponseDto deleteTask(@PathVariable(name = "taskId") Integer taskId) {
+//    return taskService.deleteTask(taskId);
+//  }
+
 }

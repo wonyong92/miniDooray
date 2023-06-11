@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhn.academy.minidooray.gateway.domain.task.request.modify.ProjectUpdateRequest;
+import com.nhn.academy.minidooray.gateway.domain.task.request.modify.TaskUpdateRequestDto;
 import com.nhn.academy.minidooray.gateway.domain.task.request.register.ProjectCreateDto;
+import com.nhn.academy.minidooray.gateway.domain.task.request.register.TaskCreateDto;
 import com.nhn.academy.minidooray.gateway.domain.task.response.read.ProjectList;
 import com.nhn.academy.minidooray.gateway.domain.task.response.register.ProjectCreateResponseDto;
 import com.nhn.academy.minidooray.gateway.service.task.resttemplate.RestTemplateTaskService;
@@ -50,5 +52,21 @@ public class TaskService {
 
   public String getProjects() {
     return restTemplateTaskService.getProjects(SecurityContextHolder.getContext().getAuthentication().getName());
+  }
+
+  public String getTask(Long taskId) {
+    return restTemplateTaskService.getTask(taskId);
+  }
+
+  public String registerTask(TaskCreateDto dto, Integer projectId){
+    return restTemplateTaskService.registerTask(dto,projectId);
+  }
+
+  public void updateTask(TaskUpdateRequestDto dto, Integer taskId) {
+    restTemplateTaskService.updateTask(dto,taskId);
+  }
+
+  public void deleteTask(Integer taskId) {
+    restTemplateTaskService.deleteTask(taskId);
   }
 }

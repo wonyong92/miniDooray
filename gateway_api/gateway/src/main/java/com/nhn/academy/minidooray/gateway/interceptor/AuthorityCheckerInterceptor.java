@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhn.academy.minidooray.gateway.config.properties.account.AccountApiServerProperties;
-import com.nhn.academy.minidooray.gateway.config.properties.task.TaskApiServerProperties;
+import com.nhn.academy.minidooray.gateway.config.properties.task.ProjectApiServerProperties;
 import java.util.Arrays;
 import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +22,7 @@ public class AuthorityCheckerInterceptor implements HandlerInterceptor {
 
   final RestTemplate restTemplate;
   final AccountApiServerProperties accountApiServerProperties;
-  final TaskApiServerProperties taskApiServerProperties;
+  final ProjectApiServerProperties projectApiServerProperties;
   final ObjectMapper objectMapper;
 
   @Override
@@ -72,7 +72,7 @@ public class AuthorityCheckerInterceptor implements HandlerInterceptor {
   public boolean checkMemberOfProject(String projectId) throws JsonProcessingException {
     String clientId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-    String requestUrl = taskApiServerProperties.getFullUrl() + "/projects/" + projectId + "/members";
+    String requestUrl = projectApiServerProperties.getFullUrl() + "/projects/" + projectId + "/members";
     log.info("check task api - get pr members full url : {}  {} ", requestUrl, clientId);
     JsonNode result = restTemplate.getForObject(requestUrl, JsonNode.class);
     System.out.println("result : " + result.get("members"));
@@ -86,7 +86,7 @@ public class AuthorityCheckerInterceptor implements HandlerInterceptor {
   }
 
   public boolean checkAmIMemberOfProject(String projectId) throws JsonProcessingException {
-    String requestUrl = taskApiServerProperties.getFullUrl() + "/projects/members?proejctId=" + projectId;
+    String requestUrl = projectApiServerProperties.getFullUrl() + "/projects/members?proejctId=" + projectId;
     log.debug("check task api - get pr members full url : " + requestUrl);
     return Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(requestUrl, JsonNode[].class, projectId)))
         .anyMatch(node ->
