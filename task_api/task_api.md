@@ -3,6 +3,7 @@
 - [프로젝트 API](#프로젝트-api)
 - [작업 API](#작업-api)
 - [작업 태그 API](#작업-태그-api)
+- [작업 마일스톤 API](#작업-마일스톤-api)
 
 
 
@@ -172,7 +173,7 @@
 
 ### 작업 API
 
-`GET` `http://localhost:8081/tasks/{taskId}` **Task 상세 조회**
+`GET` `/tasks/{taskId}` **Task 상세 조회**
 - response(task 에 대한 댓글, 마일스톤, 태그가 있을때)
 ```json
 {
@@ -237,7 +238,7 @@
 
 ```
 
-`POST` `http://localhost:8081/tasks` **Task 생성**
+`POST` `/tasks` **Task 생성**
 - request
 ```json
 {
@@ -255,7 +256,7 @@
   "projectId": 2
 }
 ```
-`PUT` `http://localhost:8081/tasks/{taskId}` **Task 수정**
+`PUT` `/tasks/{taskId}` **Task 수정**
 - request
 ```json
 {
@@ -272,7 +273,7 @@
 
 ```
 
-`DELETE` `http://localhost:8081/tasks/{taskId}` **Task 삭제**
+`DELETE` `/tasks/{taskId}` **Task 삭제**
 - response
 ```json
 {
@@ -282,7 +283,7 @@
 
 ### 작업 태그 API
 
-`POST` `http://localhost:8081/taskTags` **작업에 태그 생성**
+`POST` `/taskTags` **작업에 태그 생성**
 - request
 
 ```json
@@ -302,7 +303,7 @@
 ```
 
 
-`DELETE` `http://localhost:8081/taskTags` **작업에 태그 삭제**
+`DELETE` `/taskTags` **작업에 태그 삭제**
 - request
 ```json
 {
@@ -316,4 +317,39 @@
   "taskId": 3,
   "tagIds" : [8, 9]
 }
+```
+### 작업 마일스톤 API
 
+`POST` `/taskMilestones` **작업에 마일스톤 추가**
+- request
+```json
+{
+  "taskId" : 6,
+  "milestoneId" : 6
+}
+```
+- response
+`201 created`
+```json
+{
+  "taskId" : 6,
+  "milestoneId" : 6
+}
+```
+
+
+`DELETE` `/taskMilestones` **작업에 마일스톤 삭제**
+- request
+```json
+{
+  "taskId" : 6,
+  "milestoneId" : 6
+}
+```
+- response
+```json
+{
+  "taskId" : 6,
+  "milestoneId" : 6
+}
+```
