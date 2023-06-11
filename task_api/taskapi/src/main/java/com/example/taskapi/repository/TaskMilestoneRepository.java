@@ -10,4 +10,6 @@ public interface TaskMilestoneRepository extends JpaRepository<TaskMilestone, Ta
 
     Optional<TaskMilestone> findByTask_TaskId(Integer taskId);
     void deleteAllByTask_TaskId(Integer taskId);
+    // Task 는 1개의 마일스톤만 가질수 있음. Task가 milestone 가지고 있는지 여부
+    boolean existsByTask_TaskId(Integer taskId);
 }
