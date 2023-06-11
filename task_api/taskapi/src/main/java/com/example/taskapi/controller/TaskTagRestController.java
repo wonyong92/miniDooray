@@ -5,6 +5,7 @@ import com.example.taskapi.domain.TaskTagCreateDeleteRequest;
 import com.example.taskapi.exception.ValidationFailedException;
 import com.example.taskapi.service.TaskTagService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ public class TaskTagRestController {
     private final TaskTagService taskTagService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public TaskTagCreateDeleteResponseDto createTaskTag(@RequestBody @Validated TaskTagCreateDeleteRequest taskTagCreateDeleteRequest,
                                                         BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
