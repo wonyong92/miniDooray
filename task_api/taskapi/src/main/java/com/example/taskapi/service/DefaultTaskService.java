@@ -21,9 +21,7 @@ public class DefaultTaskService implements TaskService {
     private final TaskTagRepository taskTagRepository;
     private final MemberRepository memberRepository;
     private final TaskMilestoneRepository taskMilestoneRepository;
-    private final TagRepository tagRepository;
     private final ProjectRepository projectRepository;
-
     private final CommentRepository commentRepository;
 
     @Override
@@ -47,12 +45,12 @@ public class DefaultTaskService implements TaskService {
         if (milestone.isPresent()) {
             TaskMilestone present = milestone.get();
             return new TaskDetailReadResponseDto(task.getTaskId(), task.getTitle(),
-                    task.getContent(), tags, new MilestoneReadResponseDto(present.getMilestone().getMilestoneId(),
+                    task.getContent(), task.getCreatedAt(), task.getModifiedAt(), tags, new MilestoneReadResponseDto(present.getMilestone().getMilestoneId(),
                     present.getMilestone().getName(), present.getMilestone().getStartAt(), present.getMilestone().getEndAt())
             ,comments);
         }
         return new TaskDetailReadResponseDto(task.getTaskId(), task.getTitle(), task.getContent(),
-                tags, null, comments);
+                task.getCreatedAt(), task.getModifiedAt(), tags, null, comments);
     }
 
     @Override
