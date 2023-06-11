@@ -4,7 +4,7 @@
 - [작업 API](#작업-api)
 - [작업 태그 API](#작업-태그-api)
 - [작업 마일스톤 API](#작업-마일스톤-api)
-
+- [댓글 API](#댓글-api)
 
 
 ### 프로젝트 API
@@ -351,5 +351,58 @@
 {
   "taskId" : 6,
   "milestoneId" : 6
+}
+```
+
+### 댓글 API
+
+`POST` `/comments` **댓글 생성**
+- request
+```json
+{
+  "taskId": 3,
+  "writerId" : "steve",
+  "content" : "db관련교육 댓글 작성 - steve"
+}
+```
+- response
+`201 created`
+```json
+{
+  "commentId": 13,
+  "taskId": 3
+}
+```
+
+`GET` `/comments/{commentId}` **댓글 조회**
+- response
+```json
+{
+  "commentId": 10,
+  "writerId": "steve",
+  "content": "mvc관한 내용",
+  "modifiedAt": "2023-05-12T11:11"
+}
+
+```
+`PUT` `/comments/{commentId}` **댓글 수정**
+- request
+```json
+{
+  "content" : "수정된 댓글"
+}
+```
+- response
+```json
+{
+  "commentId": 11,
+  "taskId": 5
+}
+```
+`DELETE` `/comments/{commentId}` **댓글 삭제**
+- response
+```json
+{
+  "commentId": 12
 }
 ```
