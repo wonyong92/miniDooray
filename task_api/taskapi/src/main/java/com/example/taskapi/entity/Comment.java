@@ -1,5 +1,6 @@
 package com.example.taskapi.entity;
 
+import com.example.taskapi.domain.CommentUpdateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Table(name = "Comments")
-@AllArgsConstructor
 public class Comment {
 
     @Id
@@ -36,5 +36,15 @@ public class Comment {
     @JoinColumn(name = "task_id")
     private Task task;
 
-
+    public void updateCommentWithDto(CommentUpdateRequest commentUpdateRequest) {
+        this.content = commentUpdateRequest.getContent();
+        this.modifiedAt = LocalDateTime.now();
+    }
+    public Comment(String content, LocalDateTime createdAt, LocalDateTime modifiedAt, Member member, Task task) {
+        this.content = content;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+        this.member = member;
+        this.task = task;
+    }
 }
