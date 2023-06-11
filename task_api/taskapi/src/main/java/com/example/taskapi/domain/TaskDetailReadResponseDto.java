@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -15,6 +16,8 @@ public class TaskDetailReadResponseDto {
     private Integer taskId;
     private String title;
     private String content;
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
     private List<TagReadResponseDto> tags;
     private MilestoneReadResponseDto milestone;
     private List<CommentReadResponseDto> comments;
