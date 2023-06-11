@@ -24,14 +24,12 @@ public class DefaultProjectService implements ProjectService {
     private final ProjectMemberRepository projectMemberRepository;
     private final MilestoneRepository milestoneRepository;
     private final TaskRepository taskRepository;
-
-    private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final TagRepository tagRepository;
 
     @Override
     @Transactional
-    public ProjectCreateResponseDto creatProject(ProjectCreateRequest projectCreateRequest) {
+    public ProjectCreateResponseDto createProject(ProjectCreateRequest projectCreateRequest) {
         Member admin = memberRepository.findById(projectCreateRequest.getAdminId())
                 .orElseThrow(() -> new NotFoundException("member not found, memberId = " + projectCreateRequest.getAdminId()));
         Project project = new Project(projectCreateRequest.getName(), Project.Status.ACTIVATE);
@@ -51,17 +49,17 @@ public class DefaultProjectService implements ProjectService {
 
     @Override
     @Transactional
-    public Integer deleteProject(Integer projectId) {
+    public ProjectDeleteResponseDto deleteProject(Integer projectId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new NotFoundException("project not found, projectId = " + projectId));
         project.deleteProject();
-        return projectId;
+        return new ProjectDeleteResponseDto(project.getProjectId());
     }
 
 
     @Override
-    public ProjectDetailReadResponseDto findProjectDtoById(Integer projectId) {
-        ProjectDto projectDto = projectRepository.findProjectDtoByProjectId(projectId)
+    public ProjectDetailReadResponseDto readProject(Integer projectId) {
+        ProjectReadResponseDto projectDto = projectRepository.findProjectDtoByProjectId(projectId)
                 .orElseThrow(() -> new NotFoundException("project not found projectId = " + projectId));
         List<MemberReadResponseDto> projectMembers = projectMemberRepository.findMembersByProjectId(projectId);
         List<TaskReadResponseDto> projectTasks = taskRepository.findByProject_ProjectId(projectId)
@@ -79,7 +77,7 @@ public class DefaultProjectService implements ProjectService {
     }
 
     @Override
-    public ProjectMemberReadResponseDto findAllMembersById(Integer projectId) {
+    public ProjectMemberReadResponseDto readProjectMembers(Integer projectId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new NotFoundException("project not found, projectId = " + projectId));
         List<MemberReadResponseDto> projectMembers = projectMemberRepository.findMembersByProjectId(project.getProjectId());
@@ -87,7 +85,7 @@ public class DefaultProjectService implements ProjectService {
     }
 
     @Override
-    public ProjNameForMemReadResponseDto findProjNamesByMemberId(String memberId) {
+    public ProjNameForMemReadResponseDto readProjNamesForMem(String memberId) {
         boolean isExistedMember = memberRepository.existsById(memberId);
         if (!isExistedMember) {
             throw new NotFoundException("member not found, memberId = " + memberId);

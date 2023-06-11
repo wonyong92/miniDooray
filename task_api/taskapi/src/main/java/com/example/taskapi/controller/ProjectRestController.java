@@ -9,8 +9,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/projects")
@@ -20,18 +18,18 @@ public class ProjectRestController {
 
 
     @GetMapping("/{projectId}")
-    public ProjectDetailReadResponseDto getProject(@PathVariable(name = "projectId") Integer projectId) {
-        return projectService.findProjectDtoById(projectId);
+    public ProjectDetailReadResponseDto readProject(@PathVariable(name = "projectId") Integer projectId) {
+        return projectService.readProject(projectId);
     }
 
     @GetMapping("/{projectId}/members")
-    public ProjectMemberReadResponseDto getProjectMembers(@PathVariable(name = "projectId") Integer projectId) {
-        return projectService.findAllMembersById(projectId);
+    public ProjectMemberReadResponseDto readProjectMembers(@PathVariable(name = "projectId") Integer projectId) {
+        return projectService.readProjectMembers(projectId);
     }
 
     @GetMapping("/members/{memberId}")
-    public ProjNameForMemReadResponseDto getMemberInvolvedProjectNames(@PathVariable(name = "memberId") String memberId) {
-        return projectService.findProjNamesByMemberId(memberId);
+    public ProjNameForMemReadResponseDto readProjNameForMem(@PathVariable(name = "memberId") String memberId) {
+        return projectService.readProjNamesForMem(memberId);
     }
 
     @PostMapping
@@ -40,7 +38,7 @@ public class ProjectRestController {
         if (bindingResult.hasErrors()) {
             throw new ValidationFailedException(bindingResult);
         }
-        return projectService.creatProject(projectCreateRequest);
+        return projectService.createProject(projectCreateRequest);
     }
 
     @PutMapping("/{projectId}")
@@ -57,7 +55,7 @@ public class ProjectRestController {
     @ResponseStatus(HttpStatus.OK)
     public ProjectDeleteResponseDto deleteProject(@PathVariable(name = "projectId") Integer projectId) {
 
-        return new ProjectDeleteResponseDto(projectService.deleteProject(projectId));
+        return projectService.deleteProject(projectId);
 
     }
 }
