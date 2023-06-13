@@ -6,6 +6,7 @@
 - [작업 마일스톤 API](#작업-마일스톤-api)
 - [댓글 API](#댓글-api)
 - [태그 API](#태그-api)
+- [마일스톤 API](#마일스톤-api)
 
 ### 프로젝트 API
 
@@ -453,6 +454,61 @@
 {
   "tagId": 11,
   "projectId": 3
+}
+```
+### 마일스톤 API
+`POST` `/milestones` **마일스톤 생성**
+- request
+```json
+{
+  "projectId" : 3,
+  "name": "신규 마일스톤",
+  "startAt" : "2023-06-25",
+  "endAt" : "2023-06-28"
+}
+```
+- response
+`201 created`
+```json
+{
+  "projectId": 3,
+  "milestoneId": 8
+}
+```
+
+`GET` `/milestones/{milestoneId}` **마일스톤 조회**
+- response
+```json
+{
+  "milestoneId": 1,
+  "name": "객제지향",
+  "startAt": "2022-01-10",
+  "endAt": "2022-01-17"
+}
+```
+`PUT` `/milestones/{milestoneId}` **마일스톤 수정**
+- request
+```json
+{
+  "projectId" : 1,
+  "name" : "객제지향 익히기 수정",
+  "startAt" : "2022-01-10",
+  "endAt" : "2022-01-17"
+}
+```
+- response
+```json
+{
+  "projectId": 1,
+  "milestoneId": 1
+}
+```
+`DELETE` `/milestones/{milestoneId}` **태그 삭제**
+- response
+```json
+{
+  "projectId": 3,
+  "milestoneId": 9
 }
 ```
 
