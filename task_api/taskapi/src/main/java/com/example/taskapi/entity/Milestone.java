@@ -1,6 +1,6 @@
 package com.example.taskapi.entity;
 
-import lombok.AllArgsConstructor;
+import com.example.taskapi.domain.MilestoneCreateUpdateRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -12,12 +12,12 @@ import java.time.LocalDate;
 @Table(name = "Milestones")
 @Getter
 @ToString
-@AllArgsConstructor
 @NoArgsConstructor
 public class Milestone {
 
     @Id
     @Column(name = "milestone_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer milestoneId;
     @Column(name = "name", nullable = false)
     private String name;
@@ -29,4 +29,16 @@ public class Milestone {
     @JoinColumn(name = "project_id")
     private Project project;
 
+    public Milestone(String name, LocalDate startAt, LocalDate endAt, Project project) {
+        this.name = name;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.project = project;
+    }
+
+    public void updateMilestoneWithDto(MilestoneCreateUpdateRequest milestoneCreateUpdateRequest) {
+        this.name = milestoneCreateUpdateRequest.getName();
+        this.startAt = milestoneCreateUpdateRequest.getStartAt();
+        this.endAt = milestoneCreateUpdateRequest.getEndAt();
+    }
 }
