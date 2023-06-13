@@ -1,5 +1,6 @@
 package com.example.taskapi.entity;
 
+import com.example.taskapi.domain.TagUpdateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,6 @@ import javax.persistence.*;
 @Table(name = "Tags")
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @ToString
 public class Tag {
@@ -27,4 +27,12 @@ public class Tag {
     @JoinColumn(name = "project_id")
     private Project project;
 
+    public Tag(String name, Project project) {
+        this.name = name;
+        this.project = project;
+    }
+
+    public void updateTagWithDto(TagUpdateRequest tagUpdateRequest) {
+        this.name = tagUpdateRequest.getName();
+    }
 }

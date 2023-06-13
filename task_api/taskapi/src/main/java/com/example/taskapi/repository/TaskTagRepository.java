@@ -12,4 +12,6 @@ public interface TaskTagRepository extends JpaRepository<TaskTag, TaskTag.Pk> {
 
     void deleteAllByTask_TaskId(Integer taskId);
 
+    void deleteAllByTag_TagId(Integer tagId);
+
 }
