@@ -5,7 +5,7 @@
 - [작업 태그 API](#작업-태그-api)
 - [작업 마일스톤 API](#작업-마일스톤-api)
 - [댓글 API](#댓글-api)
-
+- [태그 API](#태그-api)
 
 ### 프로젝트 API
 
@@ -406,3 +406,53 @@
   "commentId": 12
 }
 ```
+### 태그 API
+
+`POST` `/tags` **태그 생성**
+- request
+```json
+{
+  "name" : "태그1",
+  "projectId" : 3
+}
+```
+- response
+`201 created`
+```json
+{
+  "tagId": 11,
+  "projectId": 3
+}
+```
+
+`GET` `/tags/{tagId}` **태그 조회**
+- response
+```json
+{
+  "tagId": 11,
+  "name": "태그1"
+}
+```
+`PUT` `/tags/{tagId}` **태그 수정**
+- request
+```json
+{
+  "name" : "수정 태그"
+}
+```
+- response
+```json
+{
+  "tagId": 11,
+  "projectId": 3
+}
+```
+`DELETE` `/tags/{tagsId}` **태그 삭제**
+- response
+```json
+{
+  "tagId": 11,
+  "projectId": 3
+}
+```
+
