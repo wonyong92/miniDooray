@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhn.academy.minidooray.gateway.config.properties.account.AccountApiServerProperties;
-import com.nhn.academy.minidooray.gateway.config.properties.task.ProjectApiServerProperties;
+import com.nhn.academy.minidooray.gateway.config.properties.task.TaskApiServerProperties;
 import com.nhn.academy.minidooray.gateway.config.security.SecurityConfig;
 import com.nhn.academy.minidooray.gateway.config.webconfig.GatewayApplication;
 import org.junit.jupiter.api.Test;
@@ -25,11 +25,11 @@ class extra {
   @Autowired
   AccountApiServerProperties accountApiServerProperties;
   @Autowired
-  ProjectApiServerProperties projectApiServerProperties;
+  TaskApiServerProperties taskApiServerProperties;
   @Test
   void configurationProperties_getFullUrl_test (){
     assertThat(accountApiServerProperties.getFullUrl()).isEqualTo(accountApiServerProperties.getUrl()+":"+accountApiServerProperties.getPort());
-    assertThat(projectApiServerProperties.getFullUrl()).isEqualTo(projectApiServerProperties.getUrl()+":"+ projectApiServerProperties.getPort());
+    assertThat(taskApiServerProperties.getFullUrl()).isEqualTo(taskApiServerProperties.getUrl()+":"+ taskApiServerProperties.getPort());
   }
 
 

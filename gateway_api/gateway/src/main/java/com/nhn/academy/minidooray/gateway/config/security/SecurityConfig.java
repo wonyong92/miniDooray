@@ -21,7 +21,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -41,8 +40,8 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-@EnableWebSecurity(debug = false)
-@EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
+@EnableWebSecurity(debug = true)
+//@EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
 @Slf4j
 public class SecurityConfig {
 
@@ -81,9 +80,23 @@ public class SecurityConfig {
       throws Exception {
 
     http.csrf().disable();
-    http.anonymous().disable();
-    http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);//공부 필요
-    http.rememberMe().rememberMeServices(rememberMeServices(userDetailsService(restTemplate, objectMapper, accountApiServerProperties)));
+//    http.anonymous().disable();
+
+    http.authenticationProvider(authenticationProvider(passwordEncoder, restTemplate, objectMapper, accountApiServerProperties))
+        .authorizeRequests()
+        .antMatchers("/login/*")
+        .permitAll()
+        .antMatchers("/")
+        .permitAll()
+        .antMatchers("/account/*")
+        .permitAll()
+        .anyRequest().permitAll();
+
+    http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
+
+    http.rememberMe()
+        .rememberMeServices(rememberMeServices(userDetailsService(restTemplate, objectMapper, accountApiServerProperties)));
+
     http.formLogin()
         .loginProcessingUrl("/login")
         .successHandler(new AuthenticationSuccessHandler() {
@@ -118,12 +131,6 @@ public class SecurityConfig {
         .userInfoEndpoint()
         .userService(oAuth2MemberService);
 
-    http.authenticationProvider(authenticationProvider(passwordEncoder, restTemplate, objectMapper, accountApiServerProperties))
-        .authorizeRequests()
-        .antMatchers("/login/*")
-        .permitAll()
-        .anyRequest().permitAll();
-
     http.headers()
         .defaultsDisabled()
         .contentTypeOptions()
@@ -136,10 +143,19 @@ public class SecurityConfig {
         .and()
         .exceptionHandling()
         .accessDeniedHandler(new AccessDeniedExceptionHandler());
-    //보안 헤더 설정
+//    보안 헤더 설정
 
     return http.build();
   }
+
+//  @Bean
+//  public CookieSerializer cookieSerializer() {
+//    DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+//    serializer.setCookieName("SESSIONID");
+//    serializer.setCookiePath("/");
+//    serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
+//    return serializer;
+//  }
 
   @Bean
   public TokenBasedRememberMeServices rememberMeServices(UserDetailsService userDetailsService) {
@@ -195,7 +211,7 @@ public class SecurityConfig {
 //            RestTemplateUtil.createQuery
 //                (restTemplate, accountApiServerProperties.getUrl(), accountApiServerProperties.getPort(), "/accounts", HttpMethod.GET, String.class, Map.of("id", username));
         System.out.println(accountApiServerProperties.getFullUrl() + "/accounts?id={}");
-        JsonNode result = restTemplate.getForEntity(accountApiServerProperties.getFullUrl() + "/accounts?id={id}", JsonNode.class, Map.of("id", username)).getBody();
+        JsonNode result = restTemplate.getForEntity(accountApiServerProperties.getFullUrl() + "/accounts/{id}", JsonNode.class, Map.of("id", username)).getBody();
         String pwd = "";
         String id = "";
         try {

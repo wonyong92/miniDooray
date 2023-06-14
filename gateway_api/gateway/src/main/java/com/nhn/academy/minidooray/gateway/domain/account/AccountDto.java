@@ -12,7 +12,21 @@ import lombok.ToString;
 @ToString
 public class AccountDto {
 
-  String id;
-  String email;
-  String pwd;
+
+  private String id;
+
+
+  private String email;
+
+
+  private String pwd;
+
+
+  private String nickname;
+
+
+  private String accountStatus;
+
+
+  private String systemAuth;
 }

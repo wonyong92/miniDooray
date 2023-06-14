@@ -72,10 +72,11 @@ public class CustomOAuth2MemberService implements OAuth2UserService<OAuth2UserRe
 
         privateEmail = result[1].get("email").toString();//private email 읽기
         publicEmail = result[0].get("email").toString();//public email 읽기
-
+        System.out.println("private email 확인 : " + privateEmail);
         attributes = new HashMap<>(oAuth2User.getAttributes());
         attributes.put("public_email", publicEmail);
         attributes.put("private_email", privateEmail);
+        session.setAttribute("Attribute", attributes);
         System.out.println("oauth 로그인 중~~~~ : " + userRequest.getAdditionalParameters());
       } catch (NullPointerException e) {
         log.info("result 길이 확인 필요");

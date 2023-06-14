@@ -48,16 +48,34 @@ public class AccountService {
   }
 
   public String createAccount(AccountDto dto) throws JsonProcessingException {
+    dto.setPwd(encoder.encode(dto.getPwd()));
     String result = RestTemplateUtil.createQuery(template, accountUrl, accountPort, "/accounts", HttpMethod.POST, mapper.writeValueAsString(dto), String.class).getBody();
     return result;
   }
 
   public String getAccount(String id) {
-    String result = RestTemplateUtil.createQuery(template, accountUrl, accountPort, "/accounts", HttpMethod.GET, String.class, Map.of("id", id)).getBody();
-    if (result == null || result.equals("")) {
-      return "no_data";
-    }
-    return result;
+//    String result = RestTemplateUtil.createQuery(template, accountUrl, accountPort, "/accounts", HttpMethod.GET, String.class, Map.of("id", id)).getBody();
+//    if (result == null || result.equals("")) {
+//      return "no_data";
+//    }
+    return template.getForObject(accountApiServerProperties.getFullUrl() + "/accounts/{memberId}/detail", String.class, id);
+  }
+
+  public String getAccountById(String id) {
+//    String result = RestTemplateUtil.createQuery(template, accountUrl, accountPort, "/accounts", HttpMethod.GET, String.class, Map.of("id", id)).getBody();
+//    if (result == null || result.equals("")) {
+//      return "no_data";
+//    }
+    return template.getForObject(accountApiServerProperties.getFullUrl() + "/accounts/{memberId}", String.class, id);
+  }
+
+
+  public String getAllAccounts() {
+//    String result = RestTemplateUtil.createQuery(template, accountUrl, accountPort, "/accounts", HttpMethod.GET, String.class, Map.of("id", id)).getBody();
+//    if (result == null || result.equals("")) {
+//      return "no_data";
+//    }
+    return template.getForObject(accountApiServerProperties.getFullUrl() + "/accounts", String.class);
   }
 
   public ResponseEntity<Boolean> checkExistId(String id) {
@@ -76,5 +94,21 @@ public class AccountService {
       return ResponseEntity.ok(false);
     }
     return ResponseEntity.ok(result.getBody());
+  }
+
+  public String getPwdById(String memberId) {
+    return template.getForObject(accountApiServerProperties.getFullUrl() + "/accounts/{memberId}/password", String.class, memberId);
+  }
+
+  public String getEmailById(String memberId) {
+    return template.getForObject(accountApiServerProperties.getFullUrl() + "/accounts/{memberId}/email", String.class, memberId);
+  }
+
+  public void putAccount(AccountDto dto, String memberId) {
+    template.postForObject(accountApiServerProperties.getFullUrl() + "/accounts/{memberId}/update", dto, String.class, memberId);
+  }
+
+  public void deleteAccount(String memberId) {
+    template.delete(accountApiServerProperties.getFullUrl() + "/accounts/{memberId}", memberId);
   }
 }

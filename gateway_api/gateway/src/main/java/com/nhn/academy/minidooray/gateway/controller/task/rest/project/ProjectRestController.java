@@ -1,4 +1,4 @@
-package com.nhn.academy.minidooray.gateway.controller.task.rest;
+package com.nhn.academy.minidooray.gateway.controller.task.rest.project;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nhn.academy.minidooray.gateway.domain.task.request.modify.ProjectUpdateRequest;
@@ -11,10 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,26 +22,26 @@ public class ProjectRestController {
 
   private final TaskService taskService;
 
-  @PostMapping("/project")
+  @PostMapping("/project/{projectId}")
   public ResponseEntity<ProjectCreateResponseDto> createProject(@RequestBody ProjectCreateDto dto) {
     dto.setAdminId(SecurityContextHolder.getContext().getAuthentication().getName());
     return ResponseEntity.created(null).body(taskService.createProject(dto));
   }
 
-  @GetMapping("/project")
-  public ResponseEntity<String> readProject(@RequestParam String projectId) throws JsonProcessingException {
+  @GetMapping("/project/{projectId}")
+  public ResponseEntity<String> readProject(@PathVariable String projectId) throws JsonProcessingException {
 
     return ResponseEntity.ok(taskService.getProject(projectId));
   }
 
-  @PutMapping("/project")
-  public ResponseEntity<Void> test(@RequestParam String projectId, @RequestBody ProjectUpdateRequest dto) {
+  @PutMapping("/project/{projectId}")
+  public ResponseEntity<Void> test(@PathVariable String projectId, @RequestBody ProjectUpdateRequest dto) {
     taskService.updateProject(projectId, dto);
     return ResponseEntity.ok().build();
   }
 
-  @DeleteMapping("/project")
-  public ResponseEntity<Void> deleteProject(@RequestParam String projectId) {
+  @DeleteMapping("/project/{projectId}")
+  public ResponseEntity<Void> deleteProject(@PathVariable String projectId) {
     taskService.deleteProject(projectId);
     return ResponseEntity.ok().build();
   }

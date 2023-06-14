@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhn.academy.minidooray.ProjectBase;
 import com.nhn.academy.minidooray.gateway.config.properties.account.AccountApiServerProperties;
 import com.nhn.academy.minidooray.gateway.config.properties.gateway.RedisProperties;
-import com.nhn.academy.minidooray.gateway.config.properties.task.ProjectApiServerProperties;
+import com.nhn.academy.minidooray.gateway.config.properties.task.TaskApiServerProperties;
 import com.nhn.academy.minidooray.gateway.interceptor.AuthorityCheckerInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -48,7 +48,7 @@ public class GatewayApplication implements WebMvcConfigurer, ApplicationContextA
   @Autowired
   RedisProperties serverProperties;
   @Autowired
-  ProjectApiServerProperties projectApiServerProperties;
+  TaskApiServerProperties taskApiServerProperties;
   ApplicationContext context;
 
   public static void main(String[] args) {
@@ -108,7 +108,7 @@ public class GatewayApplication implements WebMvcConfigurer, ApplicationContextA
 
   @Bean
   public AuthorityCheckerInterceptor authorityChecker() {
-    return new AuthorityCheckerInterceptor(restTemplate(), accountApiServerProperties, projectApiServerProperties, context.getBean(ObjectMapper.class));
+    return new AuthorityCheckerInterceptor(restTemplate(), accountApiServerProperties, taskApiServerProperties, context.getBean(ObjectMapper.class));
   }
 
 
