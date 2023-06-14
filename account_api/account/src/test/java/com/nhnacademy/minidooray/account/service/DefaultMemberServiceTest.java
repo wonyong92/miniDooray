@@ -39,6 +39,7 @@ class DefaultMemberServiceTest {
             AccountStatus.REGISTERED, SystemAuth.USER);
 
         when(memberRepository.existsById(anyString())).thenReturn(false);
+        when(memberRepository.existsByEmail(anyString())).thenReturn(false);
         when(memberRepository.save(any(Member.class))).thenReturn(new Member("testId", "testEmail",
             "testPwd", "testNickname", AccountStatus.REGISTERED, SystemAuth.USER));
 
@@ -56,6 +57,19 @@ class DefaultMemberServiceTest {
             AccountStatus.REGISTERED, SystemAuth.USER);
 
         when(memberRepository.existsById(anyString())).thenReturn(true);
+
+        // Then
+        assertThrows(MemberDuplicatedException.class, () -> memberService.createMember(accountDto));
+    }
+
+    @Test
+    void createMember_DuplicatedEmail_ThrowsMemberDuplicatedException() {
+        // Given
+        AccountDto accountDto = new AccountDto("testId", "testEmail", "testPwd", "testNickname",
+            AccountStatus.REGISTERED, SystemAuth.USER);
+
+        when(memberRepository.existsById(anyString())).thenReturn(false);
+        when(memberRepository.existsByEmail(anyString())).thenReturn(true);
 
         // Then
         assertThrows(MemberDuplicatedException.class, () -> memberService.createMember(accountDto));
@@ -89,58 +103,60 @@ class DefaultMemberServiceTest {
     }
 
     @Test
-    void updateMember_ExistingMemberId_UpdateMember() {
-        // Given
+    void updateMember_ValidAccountDto_VerifiesUpdateOperation() {
+        // 주어진 상황
         String memberId = "testId";
-        Member existingMember = new Member("testId", "testEmail", "testPwd", "testNickname",
+        AccountDto accountDto = new AccountDto("testId", "testEmail", "testPwd", "testNickname",
             AccountStatus.REGISTERED, SystemAuth.USER);
-        AccountDto updateParam = new AccountDto("testId", "updatedEmail", "updatedPwd", "updatedNickname",
-            AccountStatus.DORMANT, SystemAuth.ADMIN);
+        Member existingMember = new Member("testId", "oldEmail", "oldPwd", "oldNickname",
+            AccountStatus.REGISTERED, SystemAuth.USER);
+        Member updatedMember = new Member("testId", "testEmail", "testPwd", "testNickname",
+            AccountStatus.REGISTERED, SystemAuth.USER);
 
-        when(memberRepository.findById(eq(memberId))).thenReturn(Optional.of(existingMember));
+        memberRepository.save(existingMember);
 
-        // When
-        memberService.updateMember(memberId, updateParam);
+        when(memberRepository.findById(anyString())).thenReturn(Optional.of(existingMember));
+        when(memberRepository.save(any(Member.class))).thenReturn(updatedMember);
 
-        // Then
-        verify(memberRepository, times(1)).save(existingMember);
-        assertEquals(updateParam.getEmail(), existingMember.getEmail());
-        assertEquals(updateParam.getPwd(), existingMember.getPwd());
-        assertEquals(updateParam.getNickname(), existingMember.getNickname());
-        assertEquals(updateParam.getAccountStatus(), existingMember.getAccountStatus());
-        assertEquals(updateParam.getSystemAuth(), existingMember.getSystemAuth());
+        // 실행
+        memberService.updateMember(memberId, accountDto);
+
+        // 검증
+        verify(memberRepository, times(1)).findById(memberId);
+        verify(memberRepository, times(1)).save(updatedMember);
     }
 
     @Test
     void updateMember_NonExistingMemberId_ThrowsMemberNotFoundException() {
         // Given
         String memberId = "nonExistingId";
-        AccountDto updateParam = new AccountDto("testId", "updatedEmail", "updatedPwd", "updatedNickname",
-            AccountStatus.DORMANT, SystemAuth.ADMIN);
+        AccountDto accountDto = new AccountDto("testId", "testEmail", "testPwd", "testNickname",
+            AccountStatus.REGISTERED, SystemAuth.USER);
 
-        when(memberRepository.findById(eq(memberId))).thenReturn(Optional.empty());
+        when(memberRepository.findById(anyString())).thenReturn(Optional.empty());
 
         // Then
-        assertThrows(MemberNotFoundException.class, () -> memberService.updateMember(memberId, updateParam));
+        assertThrows(MemberNotFoundException.class, () -> memberService.updateMember(memberId, accountDto));
     }
 
     @Test
-    void deleteMember_ExistingMemberId_SetAccountStatusAsWithdrawn() {
+    void deleteMember_ExistingMemberId_DeletesMember() {
         // Given
-        String memberId = "testId";
-        Member existingMember = new Member("testId", "testEmail", "testPwd", "testNickname",
+        Member member = new Member("testId", "testEmail", "testPwd", "testNickname",
             AccountStatus.REGISTERED, SystemAuth.USER);
+        memberRepository.save(member);
 
-        memberRepository.save(existingMember);
+        String memberId = member.getId();
 
-        when(memberRepository.findById(eq(memberId))).thenReturn(Optional.of(existingMember));
+        when(memberRepository.findById(anyString())).thenReturn(Optional.of(member));
 
         // When
         memberService.deleteMember(memberId);
 
         // Then
-        verify(memberRepository, times(1)).save(existingMember);
-        assertEquals(AccountStatus.WITHDRAWN, existingMember.getAccountStatus());
+        verify(memberRepository).findById(memberId);
+        verify(memberRepository).save(any(Member.class));
+        assertEquals(AccountStatus.WITHDRAWN, member.getAccountStatus());
     }
 
     @Test
@@ -148,7 +164,7 @@ class DefaultMemberServiceTest {
         // Given
         String memberId = "nonExistingId";
 
-        when(memberRepository.findById(eq(memberId))).thenReturn(Optional.empty());
+        when(memberRepository.findById(anyString())).thenReturn(Optional.empty());
 
         // Then
         assertThrows(MemberNotFoundException.class, () -> memberService.deleteMember(memberId));

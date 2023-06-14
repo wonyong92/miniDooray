@@ -1,7 +1,6 @@
 package com.nhnacademy.minidooray.account.service;
 
 import com.nhnacademy.minidooray.account.command.AccountDto;
-import com.nhnacademy.minidooray.account.domain.AccountStatus;
 import com.nhnacademy.minidooray.account.domain.Member;
 import com.nhnacademy.minidooray.account.ex.MemberDuplicatedException;
 import com.nhnacademy.minidooray.account.ex.MemberNotFoundException;
@@ -60,14 +59,7 @@ public class  DefaultMemberService implements MemberService {
         List<AccountDto> accountDtos = new ArrayList<>();
 
         for (Member member : members) {
-            AccountDto accountDto = new AccountDto();
-            accountDto.setId(member.getId());
-            accountDto.setEmail(member.getEmail());
-            accountDto.setPwd(member.getPwd());
-            accountDto.setNickname(member.getNickname());
-            accountDto.setAccountStatus(member.getAccountStatus());
-            accountDto.setSystemAuth(member.getSystemAuth());
-
+            AccountDto accountDto = new AccountDto(member.getId(), member.getEmail(), member.getPwd(), member.getNickname(), member.getAccountStatus(), member.getSystemAuth());
             accountDtos.add(accountDto);
         }
 
@@ -79,20 +71,14 @@ public class  DefaultMemberService implements MemberService {
     public void updateMember(String memberId, AccountDto updateParam) {
         Member member = this.getMember(memberId);
 
-        member.setPwd(updateParam.getPwd());
-        member.setEmail(updateParam.getEmail());
-        member.setNickname(updateParam.getNickname());
-        member.setAccountStatus(updateParam.getAccountStatus());
-        member.setSystemAuth(updateParam.getSystemAuth());
-
-        memberRepository.save(member);
+        member.update(updateParam);
     }
 
     @Override
     @Transactional
     public void deleteMember(String memberId) {
         Member member = this.getMember(memberId);
-        member.setAccountStatus(AccountStatus.WITHDRAWN);
+        member.delete();
     }
 
 }
