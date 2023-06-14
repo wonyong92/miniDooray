@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -45,42 +46,12 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class SecurityConfig {
 
-//  @Autowired
-//  AuthenticationSuccessHandler successHandler;
-
-//  @Autowired
-//  OauthLoginSuccessHandler oauthLoginSuccessHandler;
-
-//  @Autowired
-//  CustomOAuth2MemberService oAuth2MemberService;
-//  @Autowired
-//  UserDetailsService userDetailsService;
-
-//  @Autowired
-//  RestTemplate restTemplate;
-
-//  @Autowired
-//  PasswordEncoder passwordEncoder;
-//
-//  @Autowired
-//  ObjectMapper objectMapper;
-//  @Autowired
-//  RedisTemplate<String, Object> redisTemplate;
-//  @Autowired
-//  AccountApiServerProperties accountApiServerProperties;
-
-//  @Bean
-//  public OidcUserService oidcUserService() {
-//    return new OidcUserService();
-//  }
-
-  //기본 필터 순서 - csrf - oauth - formlogin
   @Bean
   protected SecurityFilterChain configTest(HttpSecurity http, OauthLoginSuccessHandler oauthLoginSuccessHandler, CustomOAuth2MemberService oAuth2MemberService, RestTemplate restTemplate, PasswordEncoder passwordEncoder, RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper, AccountApiServerProperties accountApiServerProperties)
       throws Exception {
 
     http.csrf().disable();
-//    http.anonymous().disable();
+    http.anonymous().disable();
 
     http.authenticationProvider(authenticationProvider(passwordEncoder, restTemplate, objectMapper, accountApiServerProperties))
         .authorizeRequests()
@@ -88,7 +59,7 @@ public class SecurityConfig {
         .permitAll()
         .antMatchers("/")
         .permitAll()
-        .antMatchers("/account/*")
+        .antMatchers(HttpMethod.POST,"/account/*")
         .permitAll()
         .anyRequest().permitAll();
 
