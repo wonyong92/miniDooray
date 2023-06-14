@@ -514,7 +514,7 @@
 ```
 
 ### 권한 확인 API
-`GET` `http://localhost:8081/tasks/auth/{taskId}` **작업 수정삭제 권한 확인**
+`GET` `/tasks/auth/{taskId}` **작업 수정삭제 권한 확인**
 - response
 ```json
 {
@@ -524,7 +524,7 @@
 ```
 
 
-`GET` `http://localhost:8081/milestones/auth/{milestoneId}` **마일스톤 수정삭제 권한 확인**
+`GET` `/milestones/auth/{milestoneId}` **마일스톤 수정삭제 권한 확인**
 - response
 ```json
 {
@@ -533,7 +533,7 @@
 }
 ```
 
-`GET` `http://localhost:8081/tags/auth/{tagId}` **태그 수정삭제 권한 확인**
+`GET` `/tags/auth/{tagId}` **태그 수정삭제 권한 확인**
 - response
 ```json
 {
@@ -542,7 +542,7 @@
 }
 ```
 
-`GET` `http://localhost:8081/comments/auth/{commentId}` **댓글 수정삭제 권한 확인**
+`GET` `/comments/auth/{commentId}` **댓글 수정삭제 권한 확인**
 
 - response
 ```json
