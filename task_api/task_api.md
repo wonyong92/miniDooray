@@ -7,6 +7,7 @@
 - [댓글 API](#댓글-api)
 - [태그 API](#태그-api)
 - [마일스톤 API](#마일스톤-api)
+- [권환확인 API](#권환확인-api)
 
 ### 프로젝트 API
 
@@ -512,3 +513,42 @@
 }
 ```
 
+### 권한 확인 API
+`GET` `http://localhost:8081/tasks/auth/{taskId}` **작업 수정삭제 권한 확인**
+- response
+```json
+{
+  "taskId": 1,
+  "projectId": 1
+}
+```
+
+
+`GET` `http://localhost:8081/milestones/auth/{milestoneId}` **마일스톤 수정삭제 권한 확인**
+- response
+```json
+{
+  "milestoneId": 4,
+  "projectId": 2
+}
+```
+
+`GET` `http://localhost:8081/tags/auth/{tagId}` **태그 수정삭제 권한 확인**
+- response
+```json
+{
+  "tagId": 2,
+  "projectId": 1
+}
+```
+
+`GET` `http://localhost:8081/comments/auth/{commentId}` **댓글 수정삭제 권한 확인**
+
+- response
+```json
+{
+  "commentId": 10,
+  "writerId": "steve",
+  "projectId": 2
+}
+```
