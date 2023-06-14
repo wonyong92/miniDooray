@@ -58,4 +58,11 @@ public class DefaultCommentService implements CommentService{
         commentRepository.delete(comment);
         return new CommentDeleteResponseDto(comment.getCommentId());
     }
+
+    @Override
+    public CommentAuthReadResponseDto readAuthComment(Integer commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException("comment not found, commentId = " + commentId));
+        return new CommentAuthReadResponseDto(comment.getCommentId(), comment.getMember().getMemberId(), comment.getTask().getProject().getProjectId());
+    }
 }

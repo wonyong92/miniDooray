@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/tasks")
 public class TaskRestController {
     private final TaskService taskService;
+
     @GetMapping("/{taskId}")
-    public TaskDetailReadResponseDto readTask(@PathVariable(name = "taskId")Integer taskId) {
+    public TaskDetailReadResponseDto readTask(@PathVariable(name = "taskId") Integer taskId) {
         return taskService.readTask(taskId);
     }
 
@@ -41,5 +42,10 @@ public class TaskRestController {
     @DeleteMapping("/{taskId}")
     public TaskDeleteResponseDto deleteTask(@PathVariable(name = "taskId") Integer taskId) {
         return taskService.deleteTask(taskId);
+    }
+
+    @GetMapping("/auth/{taskId}")
+    public TaskAuthReadResponseDto readAuthTask(@PathVariable(name = "taskId") Integer taskId) {
+        return taskService.readAuthTask(taskId);
     }
 }

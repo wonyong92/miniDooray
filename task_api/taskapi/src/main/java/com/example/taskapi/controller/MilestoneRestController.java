@@ -1,5 +1,6 @@
 package com.example.taskapi.controller;
 
+import com.example.taskapi.domain.MilestoneAuthReadResponseDto;
 import com.example.taskapi.domain.MilestoneCUDResponseDto;
 import com.example.taskapi.domain.MilestoneCreateUpdateRequest;
 import com.example.taskapi.domain.MilestoneReadResponseDto;
@@ -46,5 +47,10 @@ public class MilestoneRestController {
     @DeleteMapping("/{milestoneId}")
     public MilestoneCUDResponseDto deleteMilestone(@PathVariable(name = "milestoneId") Integer milestoneId) {
         return milestoneService.deleteMilestone(milestoneId);
+    }
+
+    @GetMapping("/auth/{milestoneId}")
+    public MilestoneAuthReadResponseDto readAuthMilestone(@PathVariable(name = "milestoneId") Integer milestoneId) {
+        return milestoneService.readAuthMilestone(milestoneId);
     }
 }

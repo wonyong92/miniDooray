@@ -8,4 +8,5 @@ public interface TagService {
     TagCUDResponseDto createTag(TagCreateRequest tagCreateRequest);
     TagCUDResponseDto updateTag(TagUpdateRequest tagUpdateRequest, Integer tagId);
     TagCUDResponseDto deleteTag(Integer tagId);
+    TagAuthReadResponseDto readAuthTag(Integer tagId);
 }

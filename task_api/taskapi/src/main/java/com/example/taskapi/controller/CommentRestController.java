@@ -42,4 +42,9 @@ public class CommentRestController {
     public CommentDeleteResponseDto deleteComment(@PathVariable(name = "commentId") Integer commentId) {
         return commentService.deleteComment(commentId);
     }
+
+    @GetMapping("/auth/{commentId}")
+    public CommentAuthReadResponseDto readAuthComment(@PathVariable(name = "commentId") Integer commentId) {
+        return commentService.readAuthComment(commentId);
+    }
 }

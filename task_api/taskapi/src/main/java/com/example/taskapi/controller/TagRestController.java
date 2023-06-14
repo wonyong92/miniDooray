@@ -20,6 +20,7 @@ public class TagRestController {
     public TagReadResponseDto readTag(@PathVariable(name = "tagId") Integer tagId) {
         return tagService.readTag(tagId);
     }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TagCUDResponseDto createTag(@RequestBody @Validated TagCreateRequest tagCreateRequest, BindingResult bindingResult) {
@@ -42,6 +43,11 @@ public class TagRestController {
     @DeleteMapping("/{tagId}")
     public TagCUDResponseDto deleteTag(@PathVariable(name = "tagId") Integer tagId) {
         return tagService.deleteTag(tagId);
+    }
+
+    @GetMapping("/auth/{tagId}")
+    public TagAuthReadResponseDto readAuthTag(@PathVariable(name = "tagId") Integer tagId) {
+        return tagService.readAuthTag(tagId);
     }
 
 }

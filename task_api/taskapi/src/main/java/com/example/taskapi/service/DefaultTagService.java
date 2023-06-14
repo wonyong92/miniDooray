@@ -54,4 +54,11 @@ public class DefaultTagService implements TagService {
         tagRepository.delete(tag);
         return new TagCUDResponseDto(tag.getTagId(), tag.getProject().getProjectId());
     }
+
+    @Override
+    public TagAuthReadResponseDto readAuthTag(Integer tagId) {
+        Tag tag = tagRepository.findById(tagId)
+                .orElseThrow(() -> new NotFoundException("tag not found, tagId = " + tagId));
+        return new TagAuthReadResponseDto(tag.getTagId(), tag.getProject().getProjectId());
+    }
 }

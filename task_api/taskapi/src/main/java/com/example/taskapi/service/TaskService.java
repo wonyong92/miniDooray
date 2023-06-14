@@ -8,4 +8,5 @@ public interface TaskService {
     TaskCreateResponseDto createTask(TaskCreateRequest taskCreateRequest);
     TaskUpdateResponseDto updateTask(TaskUpdateRequest taskUpdateRequest, Integer taskId);
     TaskDeleteResponseDto deleteTask(Integer taskId);
+    TaskAuthReadResponseDto readAuthTask(Integer taskId);
 }

@@ -1,5 +1,6 @@
 package com.example.taskapi.service;
 
+import com.example.taskapi.domain.MilestoneAuthReadResponseDto;
 import com.example.taskapi.domain.MilestoneCreateUpdateRequest;
 import com.example.taskapi.domain.MilestoneCUDResponseDto;
 import com.example.taskapi.domain.MilestoneReadResponseDto;
@@ -54,6 +55,13 @@ public class DefaultMilestoneService implements MilestoneService {
                 .orElseThrow(() -> new NotFoundException("milestone not found, milestoneId = " + milestoneId));
         milestoneRepository.delete(milestone);
         return new MilestoneCUDResponseDto(milestone.getProject().getProjectId(), milestone.getMilestoneId());
+    }
+
+    @Override
+    public MilestoneAuthReadResponseDto readAuthMilestone(Integer milestoneId) {
+        Milestone milestone = milestoneRepository.findById(milestoneId)
+                .orElseThrow(() -> new NotFoundException("milestone not found, milestoneId = " + milestoneId));
+        return new MilestoneAuthReadResponseDto(milestone.getMilestoneId(), milestone.getProject().getProjectId());
     }
 
 }

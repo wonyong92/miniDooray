@@ -94,4 +94,11 @@ public class DefaultTaskService implements TaskService {
         taskRepository.delete(task);
         return new TaskDeleteResponseDto(task.getTaskId());
     }
+
+    @Override
+    public TaskAuthReadResponseDto readAuthTask(Integer taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new NotFoundException("task not found, taskId = " + taskId));
+        return new TaskAuthReadResponseDto(task.getTaskId(), task.getProject().getProjectId());
+    }
 }

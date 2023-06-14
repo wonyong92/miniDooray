@@ -7,5 +7,6 @@ public interface CommentService {
     CommentCreateUpdateResponseDto createComment(CommentCreateRequest commentCreateRequest);
     CommentCreateUpdateResponseDto updateComment(CommentUpdateRequest commentUpdateRequest, Integer commentId);
     CommentDeleteResponseDto deleteComment(Integer commentId);
+    CommentAuthReadResponseDto readAuthComment(Integer commentId);
 }
 
