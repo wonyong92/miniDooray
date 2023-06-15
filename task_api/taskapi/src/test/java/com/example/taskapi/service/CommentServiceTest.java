@@ -3,6 +3,7 @@ package com.example.taskapi.service;
 import com.example.taskapi.domain.*;
 import com.example.taskapi.entity.Comment;
 import com.example.taskapi.entity.Member;
+import com.example.taskapi.entity.Project;
 import com.example.taskapi.entity.Task;
 import com.example.taskapi.exception.NotFoundException;
 import com.example.taskapi.repository.CommentRepository;
@@ -145,5 +146,33 @@ class CommentServiceTest {
         Assertions.assertThatExceptionOfType(NotFoundException.class)
                 .isThrownBy(() -> commentService.deleteComment(121212));
 
+    }
+
+    @Test
+    void readAuthComment() {
+        Comment comment = new Comment();
+        Member member = new Member();
+        Task task = new Task();
+        Project project = new Project();
+        ReflectionTestUtils.setField(project, "projectId", 1);
+        ReflectionTestUtils.setField(task, "project", project);
+        ReflectionTestUtils.setField(member, "memberId", "tester");
+        ReflectionTestUtils.setField(comment, "commentId", 1);
+        ReflectionTestUtils.setField(comment, "member", member);
+        ReflectionTestUtils.setField(comment, "task", task);
+        when(commentRepository.findById(anyInt()))
+                .thenReturn(Optional.of(comment));
+        CommentAuthReadResponseDto actual = commentService.readAuthComment(1);
+        Assertions.assertThat(actual.getCommentId()).isEqualTo(comment.getCommentId());
+        Assertions.assertThat(actual.getWriterId()).isEqualTo(member.getMemberId());
+        Assertions.assertThat(actual.getProjectId()).isEqualTo(task.getProject().getProjectId());
+    }
+
+    @Test
+    void readAuthNotFoundComment() {
+        when(commentRepository.findById(any()))
+                .thenReturn(Optional.empty());
+        Assertions.assertThatThrownBy(() -> commentService.readAuthComment(1111))
+                .isInstanceOf(NotFoundException.class);
     }
 }

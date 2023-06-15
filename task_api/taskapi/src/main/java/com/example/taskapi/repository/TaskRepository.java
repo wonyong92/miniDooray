@@ -1,5 +1,6 @@
 package com.example.taskapi.repository;
 
+import com.example.taskapi.domain.TaskReadResponseDto;
 import com.example.taskapi.entity.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 
