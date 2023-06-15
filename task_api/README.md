@@ -1,5 +1,9 @@
 ## TASK API
 ---
+### ERD
+<img width="1016" alt="image" src="https://github.com/wonyong92/miniDooray/assets/81916321/2fba053a-786e-40d5-aa12-28a27a0b2402">
+
+---
 - [프로젝트 API](#프로젝트-api)
 - [작업 API](#작업-api)
 - [작업 태그 API](#작업-태그-api)
