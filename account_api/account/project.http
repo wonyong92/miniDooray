@@ -1,0 +1,9 @@
+### 프로젝트 생성
+POST /accounts HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+
+{
+  "accountId": "tester",
+  "projectName": "test project"
+}
