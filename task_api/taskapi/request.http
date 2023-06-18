@@ -1,0 +1,180 @@
+### 프로젝트 조회
+GET http://localhost:8081/projects/3
+
+### 프로젝트 멤버목록 조회
+GET http://localhost:8081/projects/1/members
+
+### 멤버가 속한 프로젝트 조회
+GET http://localhost:8081/projects/members/nikki
+
+### 프로젝트 생성
+POST http://localhost:8081/projects
+Content-Type: application/json
+
+{
+  "name": "새로운 프로젝트",
+  "adminId" : "nikki"
+}
+
+### 프로젝트 수정
+PUT http://localhost:8081/projects/2
+Content-Type: application/json
+
+{
+  "name" : "수정된 프로젝트",
+  "status" : "ACTIVATE"
+}
+
+### 프로젝트 삭제
+DELETE http://localhost:8081/projects/4
+
+### 작업 생성
+
+POST http://localhost:8081/tasks
+Content-Type: application/json
+
+{
+  "title": "Spring boot/Microservice",
+  "content": "content about Springboot/Microservice",
+  "writerId" : "jacob",
+  "projectId" : 2
+}
+
+### 작업 상세 조회
+GET http://localhost:8081/tasks/2
+
+### 작업 수정
+PUT http://localhost:8081/tasks/4
+Content-Type: application/json
+
+{
+  "title" : "update Spring boot",
+  "content" :"update about content"
+}
+
+### 작업삭제
+DELETE http://localhost:8081/tasks/1
+
+### 작업 태그 추가
+POST http://localhost:8081/taskTags
+Content-Type: application/json
+
+{
+  "taskId": 3,
+  "tagIds" : [8, 9]
+}
+
+### 작업 태그 삭제
+DELETE http://localhost:8081/taskTags
+Content-Type: application/json
+
+{
+  "taskId": 3,
+  "tagIds" : [8, 9]
+}
+
+### 작업 마일스톤 추가
+POST http://localhost:8081/taskMilestones
+Content-Type: application/json
+
+{
+  "taskId" : 6,
+  "milestoneId" : 6
+}
+
+
+### 작업 마일스톤 삭제
+DELETE http://localhost:8081/taskMilestones
+Content-Type: application/json
+
+{
+  "taskId" : 6,
+  "milestoneId" : 6
+}
+
+
+### 댓글 조회
+GET http://localhost:8081/comments/10
+
+### 댓글 생성
+POST http://localhost:8081/comments
+Content-Type: application/json
+
+{
+  "taskId": 3,
+  "writerId" : "steve",
+  "content" : "db관련교육 댓글 작성 - steve"
+}
+
+### 댓글 수정
+
+PUT http://localhost:8081/comments/11
+Content-Type: application/json
+
+{
+  "content" : "수정된 댓글"
+}
+
+### 댓글 삭제
+
+DELETE http://localhost:8081/comments/10
+
+### 태그 조회
+GET http://localhost:8081/tags/11
+
+### 태그 생성
+POST http://localhost:8081/tags
+Content-Type: application/json
+
+{
+  "name" : "태그1",
+  "projectId" : 3
+}
+
+### 태그 수정
+PUT http://localhost:8081/tags/11
+Content-Type: application/json
+
+{
+  "name" : "수정 태그"
+}
+
+### 태그 삭제
+DELETE http://localhost:8081/tags/11
+
+### 마일스톤 조회
+GET http://localhost:8081/milestones/1
+### 마일스톤 생성
+POST http://localhost:8081/milestones
+Content-Type: application/json
+
+{
+  "projectId" : 3,
+  "name": "신규 마일스톤",
+  "startAt" : "2023-06-25",
+  "endAt" : "2023-06-28"
+}
+### 마일스톤 수정
+PUT http://localhost:8081/milestones/1
+Content-Type: application/json
+
+{
+  "projectId" : 1,
+  "name" : "객제지향 익히기 수정",
+  "startAt" : "2022-01-10",
+  "endAt" : "2022-01-17"
+}
+### 마일스톤 삭제
+DELETE http://localhost:8081/milestones/9
+
+### 작업 권한 확인
+GET http://localhost:8081/tasks/auth/1
+
+### 마일스톤 권환 확인
+GET http://localhost:8081/milestones/auth/4
+
+### 태그 권한 확인
+GET http://localhost:8081/tags/auth/2
+
+### 댓글 권한 확인
+GET http://localhost:8081/comments/auth/10
